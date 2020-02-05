@@ -1,5 +1,3 @@
-package model
-
 import javafx.scene.image.Image
 import java.io.File
 
@@ -22,7 +20,7 @@ class PreloadedImages(imagePath: File) : IImages<Image?> {
         images = listOf(null) + directory.walkTopDown()
             .maxDepth(1)
             .filter { it.extension.toUpperCase() in IMAGE_FORMATS }
-            .toList() + listOf(null)
+            .toSortedSet(NaturalOrderComparator()) + listOf(null)
 
         if (images.all { it == null }) {
             throw NoSuchElementException()

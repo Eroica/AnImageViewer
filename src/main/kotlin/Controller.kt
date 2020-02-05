@@ -14,7 +14,6 @@ import javafx.scene.input.ClipboardContent
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
-import model.PreloadedImages
 import java.io.File
 import java.net.URI
 import java.util.concurrent.Callable

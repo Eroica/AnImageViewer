@@ -1,8 +1,6 @@
 import javafx.application.Application
 import javafx.application.Platform
 import javafx.fxml.FXMLLoader
-import javafx.scene.Scene
-import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
@@ -16,7 +14,7 @@ fun main(args: Array<String>) {
 class AnImageViewer : Application() {
     override fun start(primaryStage: Stage) {
         primaryStage.icons.add(Image(javaClass.getResourceAsStream("Taskbar.png")))
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.initStyle(StageStyle.TRANSPARENT)
         primaryStage.width = 0.0
         primaryStage.height = 0.0
         primaryStage.show()
