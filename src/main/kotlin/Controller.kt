@@ -31,10 +31,7 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.control.ToggleGroup
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import javafx.scene.input.Clipboard
-import javafx.scene.input.ClipboardContent
-import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyEvent
+import javafx.scene.input.*
 import javafx.stage.Stage
 import java.io.File
 import java.net.URI
@@ -59,7 +56,7 @@ class MainController(initialImagePath: String) {
     lateinit var zoomMode: ToggleGroup
 
     private val currentImage = SimpleObjectProperty<Image>()
-    private val images = PreloadedImages(File(initialImagePath))
+    private var images = PreloadedImages(File(initialImagePath))
 
     fun initialize() {
         zoomMode.selectedToggleProperty().addListener(InvalidationListener { setZoomMode(imageView.image) })
@@ -107,6 +104,19 @@ class MainController(initialImagePath: String) {
             putImage(imageView.image)
         })
         actionEvent.consume()
+    }
+
+    fun onDragOver(dragEvent: DragEvent) {
+        if (dragEvent.dragboard.hasFiles()) {
+            dragEvent.acceptTransferModes(*TransferMode.ANY)
+        }
+        dragEvent.consume()
+    }
+
+    fun onDragDropped(dragEvent: DragEvent) {
+        images = PreloadedImages(dragEvent.dragboard.files.first())
+        images.currentImage()?.let { loadImage(it) }
+        dragEvent.consume()
     }
 
     fun close() {
