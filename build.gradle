@@ -2,6 +2,7 @@ plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.3.61'
     id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'org.beryx.runtime' version '1.8.0'
 }
 
@@ -14,7 +15,7 @@ repositories {
 
 javafx {
     version = "13"
-    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 dependencies {
@@ -36,5 +37,20 @@ runtime {
     jpackage {
         imageName = "An Image Viewer"
         skipInstaller = true
+    }
+}
+
+task copyAssets(type: Copy) {
+    copy {
+        from "src/An Image Viewer.lap"
+        into "build/jpackage/An Image Viewer/"
+    }
+    delete "build/jpackage/An Image Viewer/An Image Viewer.exe"
+    copy {
+        from "src/JanelWindows64.exe"
+        rename {
+            "An Image Viewer.exe"
+        }
+        into "build/jpackage/An Image Viewer/"
     }
 }

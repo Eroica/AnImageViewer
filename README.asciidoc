@@ -1,0 +1,86 @@
+= An Image Viewer
+
+This is an image viewer.
+You click on a file and it opens a window that shows that file.
+Open another image file, and a new window opens.
+You can quickly compare or browse images this way.
+
+By default, the window size is as large as the image you open; however, never larger than 800px wide/high.
+(I don't like application windows that extend/reach out over the desktop.)
+If you then navigate to other images, the window size is kept the same.
+If the window is smaller than the image, you can pan around by clicking and dragging over the image.
+
+You can of course also let the image fit into the window size.
+
+== Shortcuts
+
+.Shortcuts
+|===
+|Combination |Function
+
+|Left Arrow
+|Previous image
+
+|Right Arrow
+|Next image
+
+|Ctrl/Cmd+C
+|Copy image into clipboard
+
+|Ctrl/Cmd+1
+|Zoom image to 100 % (no zoom)
+
+|Ctrl/Cmd+2
+|Zoom in to 200 %
+
+|Ctrl/Cmd+0
+|Fit image to window size
+
+|-
+|Keep image not larger than 800px (the default)
+
+|Ctrl/Cmd+W|Close window (alternatively to your window manager's shortcut)
+|===
+
+== A Little Bit of History
+
+(Jump to <<Installation>> if you aren't interested.)
+
+So one day I needed to browse a sequence of images (basically video frames) on my new Windows computer.
+I double-click an image which opens the _Photos_ app and sure enough, I can look at my image, even though it sometimes asks me to look at content that it "`prepared.`"
+Oh I needed to turn off notifications and other "`features`" in the settings as well.
+
+Anyway, so I browse frame 1 of my images, then frame 2 ...
+but for some reason, when I hold the Right arrow key to skim through each frame, the application always takes some time to load the next image.
+Perhaps around 0.5 seconds or something like that, but this is on an Intel i7-9700!
+
+"`That can't be right,`" I said to myself, and put together this image viewer.
+There are of course probably better alternatives on Windows, but at least this image viewer works the way that I like, and I don't need to install additional things.
+
+Most importantly, it opens an image, and if you press and hold the Left/Right arrow key, the next image loads immediately.
+
+See here a quick comparison between _Photos_ and _An Image Viewer._
+I open the same directory and press and hold the right arrow key (pay attention to the current filename in the title bar).
+
+image::Comparison.gif[]
+
+__To Photos defense, I later found out that it is largely some kind of intentional (?) input delay that takes place when you press and hold a key;
+meaning that if you can hit the Arrow key rapidly, the application does manage to keep up with the speed.__
+
+== Installation
+
+A `jpackage`-generated image is available under Releases.
+`jpackage` bundles the required JRE with the executable, so nothing else is required to run An Image Viewer.
+
+For other distributions or running from source, see <<Building>> below.
+
+== Building
+
+The application is written in Kotlin using JavaFX, and built by Gradle.
+
+If you are familiar with Gradle, you can just clone this repository and execute `run` to execute it.
+Note that An Image Viewer closes immediately if there is no argument, so if you execute `run` you probably want to add `--args "..."` as well.
+
+== License
+
+zlib License, see `LICENSE` file.

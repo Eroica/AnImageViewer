@@ -1,0 +1,3 @@
+janel.main.class=MainKt
+-Djava.class.path=.\app\AnImageViewer-1.0-SNAPSHOT-all.jar
+janel.java.home.path=.\runtime
