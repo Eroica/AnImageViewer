@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.Scene?>
-<?import javafx.scene.text.Font?>
-<?import javafx.stage.Stage?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.stage.*?>
+
 <Stage alwaysOnTop="true" minHeight="160.0" minWidth="190.0" resizable="false" title="About An Image Viewer" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <scene>
       <Scene>
@@ -19,7 +19,7 @@
                         <Insets bottom="8.0" />
                      </VBox.margin>
                      <image>
-                        <Image url="@AnImageViewer.png" />
+                        <Image url="@64.png" />
                      </image></ImageView>
                   <Label text="An Image Viewer">
                      <font>

@@ -35,7 +35,7 @@ fun main(args: Array<String>) {
 
 class AnImageViewer : Application() {
     override fun start(primaryStage: Stage) {
-        primaryStage.icons.add(Image(javaClass.getResourceAsStream("Taskbar.png")))
+        primaryStage.icons.add(Image(javaClass.getResourceAsStream("48.png")))
         primaryStage.initStyle(StageStyle.TRANSPARENT)
         primaryStage.width = 0.0
         primaryStage.height = 0.0
@@ -48,7 +48,7 @@ class AnImageViewer : Application() {
             }).load<Stage>()
             stage.initOwner(primaryStage)
             stage.setOnHidden { Platform.runLater(primaryStage::hide) }
-            stage.icons.add(Image(javaClass.getResourceAsStream("TitleBar.png")))
+            stage.icons.add(Image(javaClass.getResourceAsStream("16.png")))
 
             controller.aboutMenuItem.setOnAction {
                 with(FXMLLoader.load<Stage>(javaClass.getResource("AboutWindow.fxml"))) {
