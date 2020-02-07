@@ -37,6 +37,7 @@ runtime {
     jpackage {
         imageName = "An Image Viewer"
         skipInstaller = true
+        imageOptions = ["--copyright", "2019-2020", "--vendor", "Moebots"]
     }
 }
 
