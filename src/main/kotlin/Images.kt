@@ -29,7 +29,8 @@ interface IImages<T> {
     fun nextImage(): T
 }
 
-private val IMAGE_FORMATS = setOf("JPG", "PNG", "BMP", "TIF", "TIFF", "SVG", "ICO")
+// Supported types from https://docs.oracle.com/javase/8/javafx/api/javafx/scene/image/Image.html
+private val IMAGE_FORMATS = setOf("BMP", "GIF", "JPG", "JPEG", "PNG")
 
 class PreloadedImages(imagePath: File) : IImages<Image?> {
     private val images: List<File?>
