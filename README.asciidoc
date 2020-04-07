@@ -3,9 +3,10 @@
 This is an image viewer.
 You click on a file and it opens a window that shows that file.
 Open another image file, and a new window opens.
+Press the left or right arrow key to navigate to the next image.
 You can quickly compare or browse images this way.
 
-By default, the window size is as large as the image you open; however, never larger than 800px wide/high.
+By default, the window size is as large as the image you open; however, never larger than half of your screen's width.
 (I don't like application windows that extend/reach out over the desktop.)
 If you then navigate to other images, the window size is kept the same.
 If the window is smaller than the image, you can pan around by clicking and dragging over the image.
@@ -13,6 +14,8 @@ If the window is smaller than the image, you can pan around by clicking and drag
 You can of course also let the image fit into the window size.
 
 == Shortcuts
+
+_Switch `Ctrl` with `Cmd` on macOS._
 
 .Shortcuts
 |===
@@ -24,22 +27,20 @@ You can of course also let the image fit into the window size.
 |Right Arrow
 |Next image
 
-|Ctrl/Cmd+C
-|Copy image into clipboard
-
-|Ctrl/Cmd+1
+|Ctrl+1
 |Zoom image to 100 % (no zoom)
 
-|Ctrl/Cmd+2
+|Ctrl+2
 |Zoom in to 200 %
 
-|Ctrl/Cmd+0
+|Ctrl+0
 |Fit image to window size
 
 |-
-|Keep image not larger than 800px (the default)
+|Keep image not larger than half of the screen width (the default)
 
-|Ctrl/Cmd+W|Close window (alternatively to your window manager's shortcut)
+|Ctrl+W +
+Ctrl+Q|Close window (alternatively to your window manager's shortcut)
 |===
 
 == A Little Bit of History
@@ -66,6 +67,12 @@ image::Comparison.gif[]
 
 __To Photos defense, I later found out that it is largely some kind of intentional (?) input delay that takes place when you press and hold a key;
 meaning that if you can hit the Arrow key rapidly, the application does manage to keep up with the speed.__
+
+=== How does it work
+
+If you open an image, An Image Viewer will automatically pre-load the next and previous images.
+This speeds up browsing between images.
+I'm sure there are better approaches, but this works for me.
 
 == Installation
 
