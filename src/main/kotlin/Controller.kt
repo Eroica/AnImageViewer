@@ -36,6 +36,7 @@ import javafx.scene.input.*
 import javafx.stage.Screen
 import javafx.stage.Stage
 import java.io.File
+import java.lang.IndexOutOfBoundsException
 import java.net.URI
 import java.nio.file.Paths
 import java.util.concurrent.Callable
@@ -99,14 +100,15 @@ class MainController(initialImagePath: String) {
         }
         previousButton.disableProperty().bind(images.indexProperty.isEqualTo(1))
         nextButton.disableProperty().bind(images.indexProperty.isEqualTo(images.size - 2))
-        images.currentImage()?.let {
+
+        imageView.image = images.currentImage().apply {
             when {
-                it.height > SCREEN_HEIGHT -> {
+                height > SCREEN_HEIGHT -> {
                     zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-                    val aspectRatio = it.width / it.height
+                    val aspectRatio = width / height
                     imageView.fitWidth = (SCREEN_HEIGHT - HEIGHT_PADDING) * aspectRatio
                 }
-                it.width > HALF_SCREEN_WIDTH -> {
+                width > HALF_SCREEN_WIDTH -> {
                     zoomSelection.value = ZOOM_MODE.HALF_SCREEN
                     imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
                 }
@@ -115,7 +117,6 @@ class MainController(initialImagePath: String) {
                 }
             }
             currentImage.bind(imageView.imageProperty())
-            imageView.image = it
         }
         zoomSelection.valueProperty().addListener(InvalidationListener {
             setZoomMode(imageView.image)
@@ -137,12 +138,18 @@ class MainController(initialImagePath: String) {
     }
 
     fun onPreviousClick(event: Event) {
-        images.previousImage()?.let { loadImage(it) }
+        try {
+            loadImage(images.previousImage())
+        } catch (e: IndexOutOfBoundsException) {
+        }
         event.consume()
     }
 
     fun onNextClick(event: Event) {
-        images.nextImage()?.let { loadImage(it) }
+        try {
+            loadImage(images.nextImage())
+        } catch (e: IndexOutOfBoundsException) {
+        }
         event.consume()
     }
 
@@ -162,7 +169,7 @@ class MainController(initialImagePath: String) {
 
     fun onDragDropped(dragEvent: DragEvent) {
         images = PreloadedImages(dragEvent.dragboard.files.first())
-        images.currentImage()?.let { loadImage(it) }
+        loadImage(images.currentImage())
         dragEvent.consume()
     }
 

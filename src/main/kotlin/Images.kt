@@ -33,10 +33,10 @@ interface IImages<T> {
 // Supported types from https://docs.oracle.com/javase/8/javafx/api/javafx/scene/image/Image.html
 private val IMAGE_FORMATS = setOf("BMP", "GIF", "JPG", "JPEG", "PNG")
 
-class PreloadedImages(imagePath: File) : IImages<Image?> {
+class PreloadedImages(imagePath: File) : IImages<Image> {
     private val images: List<File?>
     private var index = 1
-    private val imageCache = arrayOfNulls<Image?>(3)
+    private val imageCache = arrayOfNulls<Image>(3)
 
     val indexProperty = SimpleIntegerProperty(index)
     val size: Int
@@ -70,33 +70,33 @@ class PreloadedImages(imagePath: File) : IImages<Image?> {
         }
     }
 
-    override fun currentImage() = imageCache[1]
+    override fun currentImage() = imageCache[1]!!
 
-    override fun previousImage(): Image? {
+    override fun previousImage(): Image {
         return try {
             val previousFile = images[--index - 1]
             imageCache[2] = imageCache[1]
             imageCache[1] = imageCache[0]
             imageCache[0] = previousFile?.toURI()?.toString()?.let { Image(it)}
-            imageCache[1]
+            imageCache[1]!!
         } catch (e: IndexOutOfBoundsException) {
             ++index
-            null
+            throw(e)
         } finally {
             indexProperty.set(index)
         }
     }
 
-    override fun nextImage(): Image? {
+    override fun nextImage(): Image {
         return try {
             val nextFile = images[++index + 1]
             imageCache[0] = imageCache[1]
             imageCache[1] = imageCache[2]
             imageCache[2] = nextFile?.toURI()?.toString()?.let { Image(it) }
-            imageCache[1]
+            imageCache[1]!!
         } catch (e: IndexOutOfBoundsException) {
             --index
-            null
+            throw(e)
         } finally {
             indexProperty.set(index)
         }
