@@ -51,6 +51,13 @@ enum class ZOOM_MODE(private val label: String) {
     }
 }
 
+// Arbitrary width and height padding to leave room for taskbars/menu bars
+private val WIDTH_PADDING = 100
+private val HEIGHT_PADDING = 200
+
+private val SCREEN_HEIGHT = Screen.getPrimary().bounds.height / Screen.getPrimary().outputScaleY
+private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width / Screen.getPrimary().outputScaleX / 2
+
 class MainController(initialImagePath: String) {
     @FXML
     lateinit var stage: Stage
@@ -73,11 +80,6 @@ class MainController(initialImagePath: String) {
     private val currentImage = SimpleObjectProperty<Image>()
     private var images = PreloadedImages(File(initialImagePath))
 
-    private val screenScaleX = Screen.getPrimary().outputScaleX
-    private val screenScaleY = Screen.getPrimary().outputScaleY
-    private val screenWidth = Screen.getPrimary().bounds.width - 100
-    private val screenHeight = Screen.getPrimary().bounds.height - 200
-
     private val keyCombinations = setOf(
         Pair(KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_100),
         Pair(KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_200),
@@ -98,15 +100,19 @@ class MainController(initialImagePath: String) {
         previousButton.disableProperty().bind(images.indexProperty.isEqualTo(1))
         nextButton.disableProperty().bind(images.indexProperty.isEqualTo(images.size - 2))
         images.currentImage()?.let {
-            if (it.height * screenScaleY > screenHeight) {
-                zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-                val aspectRatio = it.width / it.height
-                imageView.fitWidth = screenHeight * aspectRatio
-            } else if (it.width * screenScaleX > screenWidth / 2) {
-                zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-                imageView.fitWidth = screenWidth / 2
-            } else {
-                zoomSelection.value = ZOOM_MODE.PERCENT_100
+            when {
+                it.height > SCREEN_HEIGHT -> {
+                    zoomSelection.value = ZOOM_MODE.HALF_SCREEN
+                    val aspectRatio = it.width / it.height
+                    imageView.fitWidth = (SCREEN_HEIGHT - HEIGHT_PADDING) * aspectRatio
+                }
+                it.width > HALF_SCREEN_WIDTH -> {
+                    zoomSelection.value = ZOOM_MODE.HALF_SCREEN
+                    imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
+                }
+                else -> {
+                    zoomSelection.value = ZOOM_MODE.PERCENT_100
+                }
             }
             currentImage.bind(imageView.imageProperty())
             imageView.image = it
@@ -167,15 +173,16 @@ class MainController(initialImagePath: String) {
             ZOOM_MODE.PERCENT_100 -> imageView.fitWidth = 0.0
             ZOOM_MODE.PERCENT_200 -> imageView.fitWidth = image.width * 2
             ZOOM_MODE.FIT_TO_WINDOW -> {
-                imageView.fitWidthProperty().bind(stage.widthProperty().subtract(50.0))
-                imageView.fitHeightProperty().bind(scrollPane.heightProperty())
+                // Need to subtract 2 to make up for the border width
+                imageView.fitWidthProperty().bind(scrollPane.widthProperty().subtract(2))
+                imageView.fitHeightProperty().bind(scrollPane.heightProperty().subtract(2))
             }
             ZOOM_MODE.HALF_SCREEN -> {
-                if (image.height * screenScaleY > screenHeight) {
+                if (image.height > SCREEN_HEIGHT) {
                     val aspectRatio = image.width / image.height
-                    imageView.fitWidth = screenHeight * aspectRatio
-                } else if (image.width * screenScaleX > screenWidth / 2) {
-                    imageView.fitWidth = screenWidth / 2
+                    imageView.fitWidth = (SCREEN_HEIGHT - HEIGHT_PADDING) * aspectRatio
+                } else if (image.width > HALF_SCREEN_WIDTH) {
+                    imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
                 }
             }
             null -> imageView.fitWidth = 0.0
