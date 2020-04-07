@@ -20,25 +20,34 @@
 
 */
 
-import javafx.application.Platform
 import javafx.beans.InvalidationListener
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
-import javafx.event.ActionEvent
+import javafx.collections.FXCollections
+import javafx.event.Event
 import javafx.fxml.FXML
-import javafx.scene.control.MenuItem
+import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
-import javafx.scene.control.ToggleGroup
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.*
+import javafx.stage.Screen
 import javafx.stage.Stage
 import java.io.File
 import java.net.URI
 import java.nio.file.Paths
 import java.util.concurrent.Callable
 
-const val MAX_IMAGE_SIZE = 800.0
+enum class ZOOM_MODE(private val label: String) {
+    PERCENT_100("100%"),
+    PERCENT_200("200%"),
+    FIT_TO_WINDOW("Fit to window size"),
+    HALF_SCREEN("Half of the screen");
+
+    override fun toString(): String {
+        return this.label
+    }
+}
 
 class MainController(initialImagePath: String) {
     @FXML
@@ -51,38 +60,59 @@ class MainController(initialImagePath: String) {
     lateinit var imageView: ImageView
 
     @FXML
-    lateinit var aboutMenuItem: MenuItem
-
-    @FXML
-    lateinit var zoomMode: ToggleGroup
+    lateinit var zoomSelection: ComboBox<ZOOM_MODE>
 
     private val currentImage = SimpleObjectProperty<Image>()
     private var images = PreloadedImages(File(initialImagePath))
 
+    private val screenScaleX = Screen.getPrimary().outputScaleX
+    private val screenScaleY = Screen.getPrimary().outputScaleY
+    private val screenWidth = Screen.getPrimary().bounds.width - 100
+    private val screenHeight = Screen.getPrimary().bounds.height - 200
+
+    private val keyCombinations = setOf(
+        Pair(KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_100),
+        Pair(KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_200),
+        Pair(KeyCodeCombination(KeyCode.DIGIT0, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.FIT_TO_WINDOW),
+        Pair(KeyCodeCombination(KeyCode.MINUS), ZOOM_MODE.HALF_SCREEN)
+    )
+
     fun initialize() {
-        zoomMode.selectedToggleProperty().addListener(InvalidationListener { setZoomMode(imageView.image) })
-        scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) { keyEvent ->
-            if (keyEvent.code == KeyCode.LEFT) {
-                images.previousImage()?.let { loadImage(it) }
-                keyEvent.consume()
+        zoomSelection.items = FXCollections.observableArrayList(*ZOOM_MODE.values())
+        scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) {
+            if (it.code == KeyCode.LEFT) {
+                onPreviousClick(it)
             }
-            if (keyEvent.code == KeyCode.RIGHT) {
-                images.nextImage()?.let { loadImage(it) }
-                keyEvent.consume()
+            if (it.code == KeyCode.RIGHT) {
+                onNextClick(it)
             }
         }
         images.currentImage()?.let {
-            if (it.width > MAX_IMAGE_SIZE) {
-                imageView.fitWidth = MAX_IMAGE_SIZE
-            } else if (it.height > MAX_IMAGE_SIZE) {
-                imageView.fitHeight = MAX_IMAGE_SIZE
+            if (it.height * screenScaleY > screenHeight) {
+                zoomSelection.value = ZOOM_MODE.HALF_SCREEN
+                val aspectRatio = it.width / it.height
+                imageView.fitWidth = screenHeight * aspectRatio
+            } else if (it.width * screenScaleX > screenWidth / 2) {
+                zoomSelection.value = ZOOM_MODE.HALF_SCREEN
+                imageView.fitWidth = screenWidth / 2
+            } else {
+                zoomSelection.value = ZOOM_MODE.PERCENT_100
             }
             currentImage.bind(imageView.imageProperty())
             imageView.image = it
         }
+        zoomSelection.valueProperty().addListener(InvalidationListener {
+            setZoomMode(imageView.image)
+        })
         stage.titleProperty().bind(Bindings.createStringBinding(Callable {
             "An Image Viewer – ${Paths.get(URI.create(currentImage.get().url))}"
         }, currentImage))
+        stage.addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
+            keyCombinations.firstOrNull { it.first.match(keyEvent) }?.let {
+                zoomSelection.value = it.second
+            }
+        }
+        scrollPane.requestFocus()
     }
 
     private fun loadImage(image: Image) {
@@ -90,21 +120,21 @@ class MainController(initialImagePath: String) {
         imageView.image = image
     }
 
-    fun previousImage(actionEvent: ActionEvent) {
+    fun onPreviousClick(event: Event) {
         images.previousImage()?.let { loadImage(it) }
-        actionEvent.consume()
+        event.consume()
     }
 
-    fun nextImage(actionEvent: ActionEvent) {
+    fun onNextClick(event: Event) {
         images.nextImage()?.let { loadImage(it) }
-        actionEvent.consume()
+        event.consume()
     }
 
-    fun copyToClipboard(actionEvent: ActionEvent) {
+    fun onCopyClick(event: Event) {
         Clipboard.getSystemClipboard().setContent(ClipboardContent().apply {
             putImage(imageView.image)
         })
-        actionEvent.consume()
+        event.consume()
     }
 
     fun onDragOver(dragEvent: DragEvent) {
@@ -120,17 +150,25 @@ class MainController(initialImagePath: String) {
         dragEvent.consume()
     }
 
-    fun close() {
-        Platform.exit()
-    }
-
     private fun setZoomMode(image: Image) {
         imageView.fitWidthProperty().unbind()
-        when (zoomMode.toggles.indexOf(zoomMode.selectedToggle)) {
-            0 -> imageView.fitWidth = 0.0
-            1 -> imageView.fitWidth = image.width * 2
-            2 -> imageView.fitWidthProperty().bind(stage.widthProperty().subtract(50.0))
-            3 -> imageView.fitWidth = if (image.width > MAX_IMAGE_SIZE) MAX_IMAGE_SIZE else 0.0
+        imageView.fitHeightProperty().unbind()
+        when (zoomSelection.value) {
+            ZOOM_MODE.PERCENT_100 -> imageView.fitWidth = 0.0
+            ZOOM_MODE.PERCENT_200 -> imageView.fitWidth = image.width * 2
+            ZOOM_MODE.FIT_TO_WINDOW -> {
+                imageView.fitWidthProperty().bind(stage.widthProperty().subtract(50.0))
+                imageView.fitHeightProperty().bind(scrollPane.heightProperty())
+            }
+            ZOOM_MODE.HALF_SCREEN -> {
+                if (image.height * screenScaleY > screenHeight) {
+                    val aspectRatio = image.width / image.height
+                    imageView.fitWidth = screenHeight * aspectRatio
+                } else if (image.width * screenScaleX > screenWidth / 2) {
+                    imageView.fitWidth = screenWidth / 2
+                }
+            }
+            null -> imageView.fitWidth = 0.0
         }
     }
 }

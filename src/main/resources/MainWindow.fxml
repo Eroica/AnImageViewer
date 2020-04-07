@@ -4,72 +4,47 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
-<?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.stage.*?>
 
 <Stage fx:id="stage" minHeight="200.0" minWidth="300.0" title="An Image Viewer" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
    <scene>
-      <Scene fill="BLACK" onDragDropped="#onDragDropped" onDragOver="#onDragOver">
+      <Scene onDragDropped="#onDragDropped" onDragOver="#onDragOver">
          <root>
             <VBox fx:id="container" minHeight="200.0" minWidth="300.0">
                <children>
-                    <MenuBar>
-                        <menus>
-                            <Menu mnemonicParsing="false" text="Viewer">
-                                <items>
-                                    <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
-                                    <SeparatorMenuItem mnemonicParsing="false" />
-                                    <MenuItem mnemonicParsing="false" onAction="#close" text="Close">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="W" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                 </accelerator>
-                              </MenuItem>
-                                </items>
-                            </Menu>
-                            <Menu mnemonicParsing="false" text="Image">
-                                <items>
-                              <MenuItem mnemonicParsing="false" onAction="#copyToClipboard" text="Copy">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </MenuItem>
-                              <SeparatorMenuItem mnemonicParsing="false" />
-                              <MenuItem mnemonicParsing="false" onAction="#previousImage" text="Previous">
-                                  <accelerator>
-                                      <KeyCodeCombination alt="UP" code="LEFT" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                  </accelerator>
-                              </MenuItem>
-                              <MenuItem mnemonicParsing="false" onAction="#nextImage" text="Next">
-                                    <accelerator>
-                                        <KeyCodeCombination alt="UP" code="RIGHT" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                    </accelerator>
-                              </MenuItem>
-                              <SeparatorMenuItem mnemonicParsing="false" />
-                              <RadioMenuItem mnemonicParsing="false" text="100 %">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT1" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                 </accelerator>
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="zoomMode" />
-                                 </toggleGroup></RadioMenuItem>
-                              <RadioMenuItem mnemonicParsing="false" text="200 %" toggleGroup="$zoomMode">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT2" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                 </accelerator></RadioMenuItem>
-                              <RadioMenuItem mnemonicParsing="false" text="Fit to Window" toggleGroup="$zoomMode">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="DIGIT0" control="UP" meta="UP" shift="UP" shortcut="DOWN" />
-                                 </accelerator></RadioMenuItem>
-                              <RadioMenuItem mnemonicParsing="false" selected="true" text="Not Larger than 800 px" toggleGroup="$zoomMode">
-                                 <accelerator>
-                                    <KeyCodeCombination alt="UP" code="MINUS" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                                 </accelerator>
-                              </RadioMenuItem>
-                                </items>
-                            </Menu>
-                        </menus>
-                    </MenuBar>
+                  <ToolBar prefHeight="40.0" prefWidth="200.0">
+                    <items>
+                        <Button accessibleText="Previous image" mnemonicParsing="false" onAction="#onPreviousClick" text="">
+                           <font>
+                              <Font name="Segoe MDL2 Assets" size="13.0" />
+                           </font>
+                            <tooltip>
+                                <Tooltip text="Previous image" />
+                            </tooltip>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#onNextClick" text="">
+                           <font>
+                              <Font name="Segoe MDL2 Assets" size="13.0" />
+                           </font>
+                            <tooltip>
+                                <Tooltip text="Next image" />
+                            </tooltip>
+                        </Button>
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <ComboBox fx:id="zoomSelection" prefWidth="150.0">
+                            <tooltip>
+                                <Tooltip text="Select zoom mode" />
+                            </tooltip>
+                        </ComboBox>
+                        <Button mnemonicParsing="false" onAction="#onCopyClick" text="Copy">
+                            <tooltip>
+                                <Tooltip text="Copy image into clipboard" />
+                            </tooltip>
+                        </Button>
+                    </items>
+                  </ToolBar>
                   <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
                      <content>
                         <StackPane styleClass="stack-pane">

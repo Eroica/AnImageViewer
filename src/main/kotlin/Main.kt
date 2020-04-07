@@ -25,6 +25,8 @@ import javafx.application.Platform
 import javafx.fxml.FXMLLoader
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import javafx.stage.StageStyle
@@ -50,17 +52,30 @@ class AnImageViewer : Application() {
             stage.setOnHidden { Platform.runLater(primaryStage::hide) }
             stage.icons.add(Image(javaClass.getResourceAsStream("16.png")))
 
-            controller.aboutMenuItem.setOnAction {
-                with(FXMLLoader.load<Stage>(javaClass.getResource("AboutWindow.fxml"))) {
-                    initStyle(StageStyle.UTILITY)
-                    addEventHandler(KeyEvent.KEY_RELEASED) {
-                        if (it.code == KeyCode.ESCAPE || (it.code == KeyCode.W && it.isShortcutDown)) {
-                            close()
-                        }
-                    }
-                    show()
+            val quitCombination1 = KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN)
+            val quitCombination2 = KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN)
+            stage.addEventHandler(KeyEvent.KEY_RELEASED) {
+                if (quitCombination1.match(it) || quitCombination2.match(it)) {
+                    Platform.exit()
                 }
             }
+
+            val aboutCombination = KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN)
+            stage.addEventHandler(KeyEvent.KEY_RELEASED) {
+                if (aboutCombination.match(it)) {
+                    with(FXMLLoader.load<Stage>(javaClass.getResource("AboutWindow.fxml"))) {
+                        initStyle(StageStyle.UTILITY)
+                        addEventHandler(KeyEvent.KEY_RELEASED) {
+                            if (it.code == KeyCode.ESCAPE || (it.code == KeyCode.W && it.isShortcutDown)) {
+                                close()
+                            }
+                        }
+                        show()
+
+                    }
+                }
+            }
+
             stage.show()
         } catch (e: NoSuchElementException) {
             println("No image provided. Exiting ...")
