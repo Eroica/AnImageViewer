@@ -37,19 +37,11 @@ fun main(args: Array<String>) {
 
 class AnImageViewer : Application() {
     override fun start(primaryStage: Stage) {
-        primaryStage.icons.add(Image(javaClass.getResourceAsStream("48.png")))
-        primaryStage.initStyle(StageStyle.TRANSPARENT)
-        primaryStage.width = 0.0
-        primaryStage.height = 0.0
-        primaryStage.show()
-
         try {
             val controller = MainController(parameters.raw.first())
             val stage = FXMLLoader(javaClass.getResource("MainWindow.fxml"), null, null, {
                 controller
             }).load<Stage>()
-            stage.initOwner(primaryStage)
-            stage.setOnHidden { Platform.runLater(primaryStage::hide) }
             stage.icons.add(Image(javaClass.getResourceAsStream("16.png")))
 
             val quitCombination1 = KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN)
