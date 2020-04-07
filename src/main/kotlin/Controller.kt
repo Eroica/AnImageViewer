@@ -35,6 +35,7 @@ import javafx.scene.input.*
 import javafx.stage.Stage
 import java.io.File
 import java.net.URI
+import java.nio.file.Paths
 import java.util.concurrent.Callable
 
 const val MAX_IMAGE_SIZE = 800.0
@@ -80,7 +81,7 @@ class MainController(initialImagePath: String) {
             imageView.image = it
         }
         stage.titleProperty().bind(Bindings.createStringBinding(Callable {
-            "An Image Viewer – ${URI(currentImage.get().url).path}"
+            "An Image Viewer – ${Paths.get(URI.create(currentImage.get().url))}"
         }, currentImage))
     }
 
