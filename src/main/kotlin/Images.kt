@@ -20,6 +20,7 @@
 
 */
 
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.image.Image
 import java.io.File
 
@@ -35,7 +36,11 @@ private val IMAGE_FORMATS = setOf("BMP", "GIF", "JPG", "JPEG", "PNG")
 class PreloadedImages(imagePath: File) : IImages<Image?> {
     private val images: List<File?>
     private var index = 1
-    private val imageCache = HashMap<Int, Image?>()
+    private val imageCache = arrayOfNulls<Image?>(3)
+
+    val indexProperty = SimpleIntegerProperty(index)
+    val size: Int
+        get() = images.size
 
     init {
         val directory = if (imagePath.isDirectory) imagePath else imagePath.parentFile
@@ -49,7 +54,7 @@ class PreloadedImages(imagePath: File) : IImages<Image?> {
             throw NoSuchElementException()
         }
 
-        // Set index to the supplied image (if it's not a directory), otherwise it stays at 0.
+        // Set index to the supplied image (if it's not a directory), otherwise it stays at 1.
         if (!imagePath.isDirectory) {
             index = images.indexOf(imagePath)
         }
@@ -72,15 +77,13 @@ class PreloadedImages(imagePath: File) : IImages<Image?> {
             val previousFile = images[--index - 1]
             imageCache[2] = imageCache[1]
             imageCache[1] = imageCache[0]
-            if (previousFile != null) {
-                imageCache[0] = Image(previousFile.toURI().toString())
-            } else {
-                imageCache[0] = null
-            }
+            imageCache[0] = previousFile?.toURI()?.toString()?.let { Image(it)}
             imageCache[1]
         } catch (e: IndexOutOfBoundsException) {
             ++index
             null
+        } finally {
+            indexProperty.set(index)
         }
     }
 
@@ -89,15 +92,13 @@ class PreloadedImages(imagePath: File) : IImages<Image?> {
             val nextFile = images[++index + 1]
             imageCache[0] = imageCache[1]
             imageCache[1] = imageCache[2]
-            if (nextFile != null) {
-                imageCache[2] = Image(nextFile.toURI().toString())
-            } else {
-                imageCache[2] = null
-            }
+            imageCache[2] = nextFile?.toURI()?.toString()?.let { Image(it) }
             imageCache[1]
         } catch (e: IndexOutOfBoundsException) {
             --index
             null
+        } finally {
+            indexProperty.set(index)
         }
     }
 }

@@ -22,10 +22,12 @@
 
 import javafx.beans.InvalidationListener
 import javafx.beans.binding.Bindings
+import javafx.beans.binding.BooleanExpression
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.event.Event
 import javafx.fxml.FXML
+import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
 import javafx.scene.image.Image
@@ -55,6 +57,12 @@ class MainController(initialImagePath: String) {
 
     @FXML
     lateinit var scrollPane: ScrollPane
+
+    @FXML
+    lateinit var previousButton: Button
+
+    @FXML
+    lateinit var nextButton: Button
 
     @FXML
     lateinit var imageView: ImageView
@@ -87,6 +95,8 @@ class MainController(initialImagePath: String) {
                 onNextClick(it)
             }
         }
+        previousButton.disableProperty().bind(images.indexProperty.isEqualTo(1))
+        nextButton.disableProperty().bind(images.indexProperty.isEqualTo(images.size - 2))
         images.currentImage()?.let {
             if (it.height * screenScaleY > screenHeight) {
                 zoomSelection.value = ZOOM_MODE.HALF_SCREEN
