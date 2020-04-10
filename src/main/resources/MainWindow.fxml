@@ -16,7 +16,7 @@
                <children>
                   <ToolBar prefHeight="40.0" prefWidth="200.0">
                     <items>
-                        <Button fx:id="previousButton" accessibleText="Previous image" mnemonicParsing="false" onAction="#onPreviousClick" text="">
+                        <Button accessibleText="Previous image" disable="${controller.images.isAtBeginning}" mnemonicParsing="false" onAction="#onPreviousClick" text="">
                            <font>
                               <Font name="Segoe MDL2 Assets" size="13.0" />
                            </font>
@@ -24,7 +24,7 @@
                                 <Tooltip text="Previous image" />
                             </tooltip>
                         </Button>
-                        <Button fx:id="nextButton" mnemonicParsing="false" onAction="#onNextClick" text="">
+                        <Button disable="${controller.images.isAtEnd}" mnemonicParsing="false" onAction="#onNextClick" text="">
                            <font>
                               <Font name="Segoe MDL2 Assets" size="13.0" />
                            </font>

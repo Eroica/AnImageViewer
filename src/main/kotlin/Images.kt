@@ -20,85 +20,100 @@
 
 */
 
-import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.image.Image
 import java.io.File
-
-interface IImages<T> {
-    fun currentImage(): T
-    fun previousImage(): T
-    fun nextImage(): T
-}
 
 // Supported types from https://docs.oracle.com/javase/8/javafx/api/javafx/scene/image/Image.html
 private val IMAGE_FORMATS = setOf("BMP", "GIF", "JPG", "JPEG", "PNG")
 
-class PreloadedImages(imagePath: File) : IImages<Image> {
-    private val images: List<File?>
-    private var index = 1
-    private val imageCache = arrayOfNulls<Image>(3)
+class PreloadedImages(imagePath: File) {
+    private val images: List<File>
 
-    val indexProperty = SimpleIntegerProperty(index)
-    val size: Int
-        get() = images.size
+    private var index = 0
+    private val isAtBeginning = SimpleBooleanProperty(true)
+    fun getIsAtBeginning() = isAtBeginning.get()
+    fun isAtBeginningProperty() = isAtBeginning
+
+    private val isAtEnd = SimpleBooleanProperty(false)
+    fun getIsAtEnd() = isAtEnd.get()
+    fun isAtEndProperty() = isAtEnd
+
+    private val currentImage: SimpleObjectProperty<Image>
+    fun getCurrentImage() = currentImage.get()
+    fun currentImageProperty() = currentImage
+
+    private val imageCache = arrayOfNulls<Image>(3)
 
     init {
         val directory = if (imagePath.isDirectory) imagePath else imagePath.parentFile
-        // Pad the list of files with `null' at the beginning and end so that every file has a successor/predecessor.
-        images = listOf(null) + directory.walkTopDown()
+        images = directory.walkTopDown()
             .maxDepth(1)
             .filter { it.extension.toUpperCase() in IMAGE_FORMATS }
-            .toSortedSet(NaturalOrderComparator()) + listOf(null)
+            .sortedWith(NaturalOrderComparator())
+            .toList()
 
-        if (images.all { it == null }) {
+        if (images.isEmpty()) {
             throw NoSuchElementException()
         }
 
-        // Set index to the supplied image (if it's not a directory), otherwise it stays at 1.
+        // Set index to the supplied image (if it's not a directory), otherwise it stays at 0.
         if (!imagePath.isDirectory) {
-            index = images.indexOf(imagePath)
+            setIndex(images.indexOf(imagePath))
         }
 
-        // Create a map of 0, 1, 2, where 1 maps to the current image, 0 to its predecessor (might be null),
-        // and 1 to its successor (might be null).
-        images.subList(index - 1, index + 2).take(3).forEachIndexed { index, file ->
-            if (file != null) {
-                imageCache[index] = Image(file.toURI().toString())
-            } else {
-                imageCache[index] = null
-            }
-        }
-    }
-
-    override fun currentImage() = imageCache[1]!!
-
-    override fun previousImage(): Image {
-        return try {
-            val previousFile = images[--index - 1]
-            imageCache[2] = imageCache[1]
-            imageCache[1] = imageCache[0]
-            imageCache[0] = previousFile?.toURI()?.toString()?.let { Image(it)}
-            imageCache[1]!!
+        imageCache[0] = try {
+            Image(images[index - 1].toURI().toString())
         } catch (e: IndexOutOfBoundsException) {
-            ++index
-            throw(e)
-        } finally {
-            indexProperty.set(index)
+            null
+        }
+        Image(images[index].toURI().toString()).let {
+            imageCache[1] = it
+            currentImage = SimpleObjectProperty(it)
+        }
+        imageCache[2] = try {
+            Image(images[index + 1].toURI().toString())
+        } catch (e: IndexOutOfBoundsException) {
+            null
         }
     }
 
-    override fun nextImage(): Image {
-        return try {
-            val nextFile = images[++index + 1]
+    private fun setIndex(value: Int) {
+        index = value
+        isAtBeginning.value = index == 0
+        isAtEnd.value = index == images.size - 1
+    }
+
+    fun moveForward() {
+        if (index == images.size - 1) {
+            return
+        } else {
+            setIndex(index + 1)
             imageCache[0] = imageCache[1]
             imageCache[1] = imageCache[2]
-            imageCache[2] = nextFile?.toURI()?.toString()?.let { Image(it) }
-            imageCache[1]!!
-        } catch (e: IndexOutOfBoundsException) {
-            --index
-            throw(e)
-        } finally {
-            indexProperty.set(index)
+            imageCache[2] = try {
+                Image(images[index + 1].toURI().toString())
+            } catch (e: IndexOutOfBoundsException) {
+                null
+            }
+            currentImage.value = imageCache[1]
+        }
+    }
+
+    fun moveBack() {
+        if (index == 0) {
+            return
+        } else {
+            setIndex(index - 1)
+            imageCache[2] = imageCache[1]
+            imageCache[1] = imageCache[0]
+            imageCache[0] = try {
+                Image(images[index - 1].toURI().toString())
+            } catch (e: IndexOutOfBoundsException) {
+                null
+            }
+            currentImage.value = imageCache[1]
         }
     }
 }

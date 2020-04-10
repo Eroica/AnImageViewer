@@ -22,12 +22,9 @@
 
 import javafx.beans.InvalidationListener
 import javafx.beans.binding.Bindings
-import javafx.beans.binding.BooleanExpression
-import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.event.Event
 import javafx.fxml.FXML
-import javafx.scene.control.Button
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
 import javafx.scene.image.Image
@@ -36,7 +33,6 @@ import javafx.scene.input.*
 import javafx.stage.Screen
 import javafx.stage.Stage
 import java.io.File
-import java.lang.IndexOutOfBoundsException
 import java.net.URI
 import java.nio.file.Paths
 import java.util.concurrent.Callable
@@ -53,8 +49,8 @@ enum class ZOOM_MODE(private val label: String) {
 }
 
 // Arbitrary width and height padding to leave room for taskbars/menu bars
-private val WIDTH_PADDING = 100
-private val HEIGHT_PADDING = 200
+private const val WIDTH_PADDING = 100
+private const val HEIGHT_PADDING = 200
 
 private val SCREEN_HEIGHT = Screen.getPrimary().bounds.height / Screen.getPrimary().outputScaleY
 private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width / Screen.getPrimary().outputScaleX / 2
@@ -67,19 +63,12 @@ class MainController(initialImagePath: String) {
     lateinit var scrollPane: ScrollPane
 
     @FXML
-    lateinit var previousButton: Button
-
-    @FXML
-    lateinit var nextButton: Button
-
-    @FXML
     lateinit var imageView: ImageView
 
     @FXML
     lateinit var zoomSelection: ComboBox<ZOOM_MODE>
 
-    private val currentImage = SimpleObjectProperty<Image>()
-    private var images = PreloadedImages(File(initialImagePath))
+    var images = PreloadedImages(File(initialImagePath))
 
     private val keyCombinations = setOf(
         Pair(KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_100),
@@ -98,10 +87,8 @@ class MainController(initialImagePath: String) {
                 onNextClick(it)
             }
         }
-        previousButton.disableProperty().bind(images.indexProperty.isEqualTo(1))
-        nextButton.disableProperty().bind(images.indexProperty.isEqualTo(images.size - 2))
 
-        imageView.image = images.currentImage().apply {
+        images.getCurrentImage().apply {
             when {
                 height > SCREEN_HEIGHT -> {
                     zoomSelection.value = ZOOM_MODE.HALF_SCREEN
@@ -116,14 +103,14 @@ class MainController(initialImagePath: String) {
                     zoomSelection.value = ZOOM_MODE.PERCENT_100
                 }
             }
-            currentImage.bind(imageView.imageProperty())
         }
+        imageView.imageProperty().bind(images.currentImageProperty())
         zoomSelection.valueProperty().addListener(InvalidationListener {
             setZoomMode(imageView.image)
         })
         stage.titleProperty().bind(Bindings.createStringBinding(Callable {
-            "An Image Viewer – ${Paths.get(URI.create(currentImage.get().url))}"
-        }, currentImage))
+            "An Image Viewer – ${Paths.get(URI.create(images.getCurrentImage().url))}"
+        }, images.currentImageProperty()))
         stage.addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
             keyCombinations.firstOrNull { it.first.match(keyEvent) }?.let {
                 zoomSelection.value = it.second
@@ -132,24 +119,13 @@ class MainController(initialImagePath: String) {
         scrollPane.requestFocus()
     }
 
-    private fun loadImage(image: Image) {
-        setZoomMode(image)
-        imageView.image = image
-    }
-
     fun onPreviousClick(event: Event) {
-        try {
-            loadImage(images.previousImage())
-        } catch (e: IndexOutOfBoundsException) {
-        }
+        images.moveBack()
         event.consume()
     }
 
     fun onNextClick(event: Event) {
-        try {
-            loadImage(images.nextImage())
-        } catch (e: IndexOutOfBoundsException) {
-        }
+        images.moveForward()
         event.consume()
     }
 
@@ -169,7 +145,7 @@ class MainController(initialImagePath: String) {
 
     fun onDragDropped(dragEvent: DragEvent) {
         images = PreloadedImages(dragEvent.dragboard.files.first())
-        loadImage(images.currentImage())
+        setZoomMode(images.getCurrentImage())
         dragEvent.consume()
     }
 
