@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.stage.*?>
-
+<?import javafx.scene.Scene?>
+<?import javafx.scene.text.Font?>
+<?import javafx.stage.Stage?>
 <Stage fx:id="stage" minHeight="200.0" minWidth="300.0" title="An Image Viewer" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainController">
    <scene>
       <Scene onDragDropped="#onDragDropped" onDragOver="#onDragOver">
@@ -44,15 +43,17 @@
                         </Button>
                     </items>
                   </ToolBar>
-                  <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true" VBox.vgrow="ALWAYS">
-                     <content>
-                        <StackPane>
-                           <children>
-                                 <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
-                           </children>
-                        </StackPane>
-                     </content>
-                  </ScrollPane>
+                   <StackPane fx:id="pane" VBox.vgrow="ALWAYS">
+                       <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true">
+                           <content>
+                               <StackPane>
+                                   <children>
+                                       <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
+                                   </children>
+                               </StackPane>
+                           </content>
+                       </ScrollPane>
+                   </StackPane>
                </children>
             </VBox>
          </root>

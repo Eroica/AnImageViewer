@@ -20,22 +20,32 @@
 
 */
 
+import javafx.animation.Interpolator
+import javafx.animation.PauseTransition
+import javafx.animation.SequentialTransition
+import javafx.animation.TranslateTransition
 import javafx.beans.InvalidationListener
 import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
 import javafx.event.Event
 import javafx.fxml.FXML
+import javafx.fxml.FXMLLoader
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.*
+import javafx.scene.layout.Pane
+import javafx.scene.layout.StackPane
+import javafx.scene.shape.Rectangle
 import javafx.stage.Screen
 import javafx.stage.Stage
+import javafx.util.Duration
 import java.io.File
 import java.net.URI
 import java.nio.file.Paths
 import java.util.concurrent.Callable
+
 
 enum class ZOOM_MODE(private val label: String) {
     PERCENT_100("100%"),
@@ -60,6 +70,9 @@ class MainController(initialImagePath: String) {
     lateinit var stage: Stage
 
     @FXML
+    lateinit var pane: StackPane
+
+    @FXML
     lateinit var scrollPane: ScrollPane
 
     @FXML
@@ -68,7 +81,7 @@ class MainController(initialImagePath: String) {
     @FXML
     lateinit var zoomSelection: ComboBox<ZOOM_MODE>
 
-    var images = PreloadedImages(File(initialImagePath))
+    val images = PreloadedImages(File(initialImagePath))
 
     private val keyCombinations = setOf(
         Pair(KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_100),
@@ -144,8 +157,27 @@ class MainController(initialImagePath: String) {
     }
 
     fun onDragDropped(dragEvent: DragEvent) {
-        images = PreloadedImages(dragEvent.dragboard.files.first())
-        setZoomMode(images.getCurrentImage())
+        try {
+            images.reInit(dragEvent.dragboard.files.first())
+        } catch (e: NoSuchElementException) {
+            val alertPane = FXMLLoader.load<Pane>(javaClass.getResource("Alert_FileType.fxml"))
+            alertPane.clip = Rectangle(alertPane.maxWidth, alertPane.prefHeight)
+            pane.children.add(alertPane)
+            val label = alertPane.children[0]
+            label.translateY = -alertPane.prefHeight
+
+            val slideDown = TranslateTransition(Duration.millis(800.0), label)
+            slideDown.byY = alertPane.prefHeight
+            slideDown.interpolator = Interpolator.SPLINE(.02,.98,.46,.95)
+            val slideUp = TranslateTransition(Duration.millis(800.0), label)
+            slideUp.byY = -alertPane.prefHeight
+            slideUp.interpolator = Interpolator.SPLINE(.02,.98,.46,.95)
+
+            SequentialTransition(slideDown, PauseTransition(Duration.seconds(2.0)), slideUp).apply {
+                setOnFinished { pane.children.remove(alertPane) }
+                play()
+            }
+        }
         dragEvent.consume()
     }
 
@@ -156,9 +188,9 @@ class MainController(initialImagePath: String) {
             ZOOM_MODE.PERCENT_100 -> imageView.fitWidth = 0.0
             ZOOM_MODE.PERCENT_200 -> imageView.fitWidth = image.width * 2
             ZOOM_MODE.FIT_TO_WINDOW -> {
-                // Need to subtract 2 to make up for the border width
-                imageView.fitWidthProperty().bind(scrollPane.widthProperty().subtract(2))
-                imageView.fitHeightProperty().bind(scrollPane.heightProperty().subtract(2))
+                // Need to subtract 2 to account for the border width
+                imageView.fitWidthProperty().bind(pane.widthProperty().subtract(2))
+                imageView.fitHeightProperty().bind(pane.heightProperty().subtract(2))
             }
             ZOOM_MODE.HALF_SCREEN -> {
                 if (image.height > SCREEN_HEIGHT) {

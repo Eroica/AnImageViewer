@@ -29,7 +29,7 @@ import java.io.File
 private val IMAGE_FORMATS = setOf("BMP", "GIF", "JPG", "JPEG", "PNG")
 
 class PreloadedImages(imagePath: File) {
-    private val images: List<File>
+    private var images: List<File>
 
     private var index = 0
     private val isAtBeginning = SimpleBooleanProperty(true)
@@ -40,20 +40,17 @@ class PreloadedImages(imagePath: File) {
     fun getIsAtEnd() = isAtEnd.get()
     fun isAtEndProperty() = isAtEnd
 
-    private val currentImage: SimpleObjectProperty<Image>
+    private val currentImage = SimpleObjectProperty<Image>()
     fun getCurrentImage() = currentImage.get()
     fun currentImageProperty() = currentImage
 
     private val imageCache = arrayOfNulls<Image>(3)
 
     init {
-        val directory = if (imagePath.isDirectory) imagePath else imagePath.parentFile
-        images = directory.walkTopDown()
-            .maxDepth(1)
-            .filter { it.extension.toUpperCase() in IMAGE_FORMATS }
-            .sortedWith(NaturalOrderComparator())
-            .toList()
-
+        if (!imagePath.isDirectory && imagePath.extension.toUpperCase() !in IMAGE_FORMATS) {
+            throw NoSuchElementException()
+        }
+        images = filterFiles(imagePath)
         if (images.isEmpty()) {
             throw NoSuchElementException()
         }
@@ -63,6 +60,19 @@ class PreloadedImages(imagePath: File) {
             setIndex(images.indexOf(imagePath))
         }
 
+        cacheImages()
+    }
+
+    private fun filterFiles(path: File): List<File> {
+        val directory = if (path.isDirectory) path else path.parentFile
+        return directory.walkTopDown()
+            .maxDepth(1)
+            .filter { it.extension.toUpperCase() in IMAGE_FORMATS }
+            .sortedWith(NaturalOrderComparator())
+            .toList()
+    }
+
+    private fun cacheImages() {
         imageCache[0] = try {
             Image(images[index - 1].toURI().toString())
         } catch (e: IndexOutOfBoundsException) {
@@ -70,8 +80,8 @@ class PreloadedImages(imagePath: File) {
         }
         Image(images[index].toURI().toString()).let {
             imageCache[1] = it
-            currentImage = SimpleObjectProperty(it)
         }
+        currentImage.value = imageCache[1]
         imageCache[2] = try {
             Image(images[index + 1].toURI().toString())
         } catch (e: IndexOutOfBoundsException) {
@@ -115,5 +125,20 @@ class PreloadedImages(imagePath: File) {
             }
             currentImage.value = imageCache[1]
         }
+    }
+
+    fun reInit(imagePath: File) {
+        images = filterFiles(imagePath)
+        if (images.isEmpty()) {
+            throw NoSuchElementException()
+        }
+
+        if (!imagePath.isDirectory) {
+            setIndex(images.indexOf(imagePath))
+            if (imagePath.extension.toUpperCase() !in IMAGE_FORMATS) {
+                throw NoSuchElementException()
+            }
+        }
+        cacheImages()
     }
 }
