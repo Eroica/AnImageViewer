@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?scenebuilder-stylesheet main.css?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -45,9 +44,9 @@
                         </Button>
                     </items>
                   </ToolBar>
-                  <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
+                  <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true" VBox.vgrow="ALWAYS">
                      <content>
-                        <StackPane styleClass="stack-pane">
+                        <StackPane>
                            <children>
                                  <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
                            </children>
