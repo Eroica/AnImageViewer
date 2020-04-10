@@ -118,9 +118,7 @@ class MainController(initialImagePath: String) {
             }
         }
         imageView.imageProperty().bind(images.currentImageProperty())
-        zoomSelection.valueProperty().addListener(InvalidationListener {
-            setZoomMode(imageView.image)
-        })
+        zoomSelection.valueProperty().addListener(InvalidationListener { setZoomMode() })
         stage.titleProperty().bind(Bindings.createStringBinding(Callable {
             "An Image Viewer – ${Paths.get(URI.create(images.getCurrentImage().url))}"
         }, images.currentImageProperty()))
@@ -134,11 +132,13 @@ class MainController(initialImagePath: String) {
 
     fun onPreviousClick(event: Event) {
         images.moveBack()
+        setZoomMode()
         event.consume()
     }
 
     fun onNextClick(event: Event) {
         images.moveForward()
+        setZoomMode()
         event.consume()
     }
 
@@ -181,9 +181,12 @@ class MainController(initialImagePath: String) {
         dragEvent.consume()
     }
 
-    private fun setZoomMode(image: Image) {
+    private fun setZoomMode() {
+        val image = images.getCurrentImage()
         imageView.fitWidthProperty().unbind()
         imageView.fitHeightProperty().unbind()
+        imageView.fitWidth = 0.0
+        imageView.fitHeight = 0.0
         when (zoomSelection.value) {
             ZOOM_MODE.PERCENT_100 -> imageView.fitWidth = 0.0
             ZOOM_MODE.PERCENT_200 -> imageView.fitWidth = image.width * 2
