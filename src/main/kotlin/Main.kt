@@ -35,6 +35,11 @@ fun main(args: Array<String>) {
     Application.launch(AnImageViewer::class.java, *args)
 }
 
+private val QUIT_COMBINATIONS = setOf(
+    KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
+    KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN)
+)
+
 class AnImageViewer : Application() {
     override fun start(primaryStage: Stage) {
         try {
@@ -44,10 +49,8 @@ class AnImageViewer : Application() {
             }).load<Stage>()
             stage.icons.add(Image(javaClass.getResourceAsStream("16.png")))
 
-            val quitCombination1 = KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN)
-            val quitCombination2 = KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN)
-            stage.addEventHandler(KeyEvent.KEY_RELEASED) {
-                if (quitCombination1.match(it) || quitCombination2.match(it)) {
+            stage.addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
+                if (QUIT_COMBINATIONS.any { it.match(keyEvent) }) {
                     Platform.exit()
                 }
             }
@@ -63,7 +66,6 @@ class AnImageViewer : Application() {
                             }
                         }
                         show()
-
                     }
                 }
             }
