@@ -41,6 +41,9 @@ _Switch `Ctrl` with `Cmd` on macOS._
 
 |Ctrl+W +
 Ctrl+Q|Close window (alternatively to your window manager's shortcut)
+
+|Ctrl+,
+|Open About window
 |===
 
 == A Little Bit of History
