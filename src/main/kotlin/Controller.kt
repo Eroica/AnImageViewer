@@ -132,13 +132,11 @@ class MainController(initialImagePath: String) {
 
     fun onPreviousClick(event: Event) {
         images.moveBack()
-        setZoomMode()
         event.consume()
     }
 
     fun onNextClick(event: Event) {
         images.moveForward()
-        setZoomMode()
         event.consume()
     }
 
@@ -197,8 +195,7 @@ class MainController(initialImagePath: String) {
             }
             ZOOM_MODE.HALF_SCREEN -> {
                 if (image.height > SCREEN_HEIGHT) {
-                    val aspectRatio = image.width / image.height
-                    imageView.fitWidth = (SCREEN_HEIGHT - HEIGHT_PADDING) * aspectRatio
+                    imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
                 } else if (image.width > HALF_SCREEN_WIDTH) {
                     imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
                 }
