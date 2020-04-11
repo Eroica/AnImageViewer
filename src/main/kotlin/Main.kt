@@ -40,28 +40,33 @@ private val QUIT_COMBINATIONS = setOf(
     KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN)
 )
 
+private val ABOUT_COMBINATION = KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN)
+
 class AnImageViewer : Application() {
     override fun start(primaryStage: Stage) {
         try {
-            val controller = MainController(parameters.raw.first())
-            val stage = FXMLLoader(javaClass.getResource("MainWindow.fxml"), null, null, {
-                controller
-            }).load<Stage>()
+            val stage = FXMLLoader(
+                javaClass.getResource("MainWindow.fxml"),
+                null,
+                null,
+                {
+                    when (it) {
+                        MainController::class.java -> MainController(parameters.raw.first())
+                        NotificationController::class.java -> NotificationController()
+                        else -> throw RuntimeException()
+                    }
+                })
+                .load<Stage>()
             stage.icons.add(Image(javaClass.getResourceAsStream("16.png")))
-
             stage.addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
                 if (QUIT_COMBINATIONS.any { it.match(keyEvent) }) {
                     Platform.exit()
                 }
-            }
-
-            val aboutCombination = KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN)
-            stage.addEventHandler(KeyEvent.KEY_RELEASED) {
-                if (aboutCombination.match(it)) {
+                if (ABOUT_COMBINATION.match(keyEvent)) {
                     with(FXMLLoader.load<Stage>(javaClass.getResource("AboutWindow.fxml"))) {
                         initStyle(StageStyle.UTILITY)
-                        addEventHandler(KeyEvent.KEY_RELEASED) {
-                            if (it.code == KeyCode.ESCAPE || (it.code == KeyCode.W && it.isShortcutDown)) {
+                        addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
+                            if (keyEvent.code == KeyCode.ESCAPE || QUIT_COMBINATIONS.any { it.match(keyEvent) }) {
                                 close()
                             }
                         }
@@ -69,7 +74,6 @@ class AnImageViewer : Application() {
                     }
                 }
             }
-
             stage.show()
         } catch (e: NoSuchElementException) {
             println("No image provided. Exiting ...")

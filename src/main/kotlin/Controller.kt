@@ -20,27 +20,18 @@
 
 */
 
-import javafx.animation.Interpolator
-import javafx.animation.PauseTransition
-import javafx.animation.SequentialTransition
-import javafx.animation.TranslateTransition
 import javafx.beans.InvalidationListener
 import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
 import javafx.event.Event
 import javafx.fxml.FXML
-import javafx.fxml.FXMLLoader
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
-import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.*
-import javafx.scene.layout.Pane
 import javafx.scene.layout.StackPane
-import javafx.scene.shape.Rectangle
 import javafx.stage.Screen
 import javafx.stage.Stage
-import javafx.util.Duration
 import java.io.File
 import java.net.URI
 import java.nio.file.Paths
@@ -66,6 +57,9 @@ private val SCREEN_HEIGHT = Screen.getPrimary().bounds.height / Screen.getPrimar
 private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width / Screen.getPrimary().outputScaleX / 2
 
 class MainController(initialImagePath: String) {
+    @FXML
+    lateinit var notificationController: NotificationController
+
     @FXML
     lateinit var stage: Stage
 
@@ -159,23 +153,7 @@ class MainController(initialImagePath: String) {
         try {
             images.reInit(dragEvent.dragboard.files.first())
         } catch (e: NoSuchElementException) {
-            val alertPane = FXMLLoader.load<Pane>(javaClass.getResource("Alert_FileType.fxml"))
-            alertPane.clip = Rectangle(alertPane.maxWidth, alertPane.prefHeight)
-            pane.children.add(alertPane)
-            val label = alertPane.children[0]
-            label.translateY = -alertPane.prefHeight
-
-            val slideDown = TranslateTransition(Duration.millis(800.0), label)
-            slideDown.byY = alertPane.prefHeight
-            slideDown.interpolator = Interpolator.SPLINE(.02, .98, .46, .95)
-            val slideUp = TranslateTransition(Duration.millis(800.0), label)
-            slideUp.byY = -alertPane.prefHeight
-            slideUp.interpolator = Interpolator.SPLINE(.02, .98, .46, .95)
-
-            SequentialTransition(slideDown, PauseTransition(Duration.seconds(2.0)), slideUp).apply {
-                setOnFinished { pane.children.remove(alertPane) }
-                play()
-            }
+            notificationController.showError()
         }
         dragEvent.consume()
     }

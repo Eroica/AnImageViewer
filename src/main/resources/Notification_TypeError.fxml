@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<Label alignment="CENTER" maxWidth="250.0" prefWidth="250.0" style="-fx-border-radius: 0 0 5px 5px; -fx-background-radius: 0 0 5px 5px; -fx-border-color: #ffcccc; -fx-background-color: #ffe5e5;" text="This file type is not supported." textAlignment="CENTER" textFill="#d14545" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+    </padding>
+</Label>
