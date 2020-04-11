@@ -83,12 +83,12 @@ class MainController(initialImagePath: String) {
 
     val images = PreloadedImages(File(initialImagePath))
 
-    private val keyCombinations = setOf(
-        Pair(KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_100),
-        Pair(KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.PERCENT_200),
-        Pair(KeyCodeCombination(KeyCode.DIGIT0, KeyCombination.SHORTCUT_DOWN), ZOOM_MODE.FIT_TO_WINDOW),
-        Pair(KeyCodeCombination(KeyCode.MINUS), ZOOM_MODE.HALF_SCREEN)
-    )
+    private val keyCombinations = mapOf(
+        KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN) to ZOOM_MODE.PERCENT_100,
+        KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN) to ZOOM_MODE.PERCENT_200,
+        KeyCodeCombination(KeyCode.DIGIT0, KeyCombination.SHORTCUT_DOWN) to ZOOM_MODE.FIT_TO_WINDOW,
+        KeyCodeCombination(KeyCode.MINUS) to ZOOM_MODE.HALF_SCREEN
+    ).asSequence()
 
     fun initialize() {
         zoomSelection.items = FXCollections.observableArrayList(*ZOOM_MODE.values())
@@ -118,13 +118,14 @@ class MainController(initialImagePath: String) {
             }
         }
         imageView.imageProperty().bind(images.currentImageProperty())
+        images.currentImageProperty().addListener(InvalidationListener { setZoomMode() })
         zoomSelection.valueProperty().addListener(InvalidationListener { setZoomMode() })
         stage.titleProperty().bind(Bindings.createStringBinding(Callable {
             "An Image Viewer – ${Paths.get(URI.create(images.getCurrentImage().url))}"
         }, images.currentImageProperty()))
         stage.addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
-            keyCombinations.firstOrNull { it.first.match(keyEvent) }?.let {
-                zoomSelection.value = it.second
+            keyCombinations.firstOrNull { it.key.match(keyEvent) }?.let {
+                zoomSelection.value = it.value
             }
         }
         scrollPane.requestFocus()
@@ -166,10 +167,10 @@ class MainController(initialImagePath: String) {
 
             val slideDown = TranslateTransition(Duration.millis(800.0), label)
             slideDown.byY = alertPane.prefHeight
-            slideDown.interpolator = Interpolator.SPLINE(.02,.98,.46,.95)
+            slideDown.interpolator = Interpolator.SPLINE(.02, .98, .46, .95)
             val slideUp = TranslateTransition(Duration.millis(800.0), label)
             slideUp.byY = -alertPane.prefHeight
-            slideUp.interpolator = Interpolator.SPLINE(.02,.98,.46,.95)
+            slideUp.interpolator = Interpolator.SPLINE(.02, .98, .46, .95)
 
             SequentialTransition(slideDown, PauseTransition(Duration.seconds(2.0)), slideUp).apply {
                 setOnFinished { pane.children.remove(alertPane) }
