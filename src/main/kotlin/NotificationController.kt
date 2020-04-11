@@ -9,6 +9,9 @@ import javafx.scene.layout.StackPane
 import javafx.scene.shape.Rectangle
 import javafx.util.Duration
 
+private val ANIM_DURATION = Duration.millis(800.0)
+private val EASING = Interpolator.SPLINE(.02, .98, .46, .95)
+
 class NotificationController {
     @FXML
     private lateinit var stackPane: StackPane
@@ -22,12 +25,12 @@ class NotificationController {
         label.translateY = -stackPane.prefHeight
         stackPane.children.add(label)
 
-        val slideDown = TranslateTransition(Duration.millis(800.0), label)
+        val slideDown = TranslateTransition(ANIM_DURATION, label)
         slideDown.byY = stackPane.prefHeight
-        slideDown.interpolator = Interpolator.SPLINE(.02, .98, .46, .95)
-        val slideUp = TranslateTransition(Duration.millis(800.0), label)
+        slideDown.interpolator = EASING
+        val slideUp = TranslateTransition(ANIM_DURATION, label)
         slideUp.byY = -stackPane.prefHeight
-        slideUp.interpolator = Interpolator.SPLINE(.02, .98, .46, .95)
+        slideUp.interpolator = EASING
 
         SequentialTransition(slideDown, PauseTransition(Duration.seconds(2.0)), slideUp).apply {
             setOnFinished { stackPane.children.remove(label) }
