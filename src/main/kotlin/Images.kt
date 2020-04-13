@@ -29,9 +29,13 @@ import java.io.File
 private val IMAGE_FORMATS = setOf("BMP", "GIF", "JPG", "JPEG", "PNG")
 
 class PreloadedImages(imagePath: File) {
-    private var images: List<File>
-
+    private var images = filterFiles(imagePath)
     private var index = 0
+    private set(value) {
+        field = value
+        isAtBeginning.value = index == 0
+        isAtEnd.value = index == images.size - 1
+    }
     private val isAtBeginning = SimpleBooleanProperty(true)
     fun getIsAtBeginning() = isAtBeginning.get()
     fun isAtBeginningProperty() = isAtBeginning
@@ -41,25 +45,23 @@ class PreloadedImages(imagePath: File) {
     fun isAtEndProperty() = isAtEnd
 
     private val currentImage = SimpleObjectProperty<Image>()
-    fun getCurrentImage() = currentImage.get()
+    fun getCurrentImage(): Image = currentImage.get()
     fun currentImageProperty() = currentImage
 
     private val imageCache = arrayOfNulls<Image>(3)
 
     init {
+        initialize(imagePath)
+    }
+
+    fun initialize(imagePath: File) {
+        if (imagePath !in images) {
+            images = filterFiles(imagePath)
+        }
         if (!imagePath.isDirectory && imagePath.extension.toUpperCase() !in IMAGE_FORMATS) {
             throw NoSuchElementException()
         }
-        images = filterFiles(imagePath)
-        if (images.isEmpty()) {
-            throw NoSuchElementException()
-        }
-
-        // Set index to the supplied image (if it's not a directory), otherwise it stays at 0.
-        if (!imagePath.isDirectory) {
-            setIndex(images.indexOf(imagePath))
-        }
-
+        index = images.indexOf(imagePath)
         cacheImages()
     }
 
@@ -70,6 +72,11 @@ class PreloadedImages(imagePath: File) {
             .filter { it.extension.toUpperCase() in IMAGE_FORMATS }
             .sortedWith(NaturalOrderComparator())
             .toList()
+            .also {
+                if (it.isEmpty()) {
+                    throw NoSuchElementException()
+                }
+            }
     }
 
     private fun cacheImages() {
@@ -89,17 +96,11 @@ class PreloadedImages(imagePath: File) {
         }
     }
 
-    private fun setIndex(value: Int) {
-        index = value
-        isAtBeginning.value = index == 0
-        isAtEnd.value = index == images.size - 1
-    }
-
     fun moveForward() {
         if (index == images.size - 1) {
             return
         } else {
-            setIndex(index + 1)
+            index++
             imageCache[0] = imageCache[1]
             imageCache[1] = imageCache[2]
             imageCache[2] = try {
@@ -115,7 +116,7 @@ class PreloadedImages(imagePath: File) {
         if (index == 0) {
             return
         } else {
-            setIndex(index - 1)
+            index--
             imageCache[2] = imageCache[1]
             imageCache[1] = imageCache[0]
             imageCache[0] = try {
@@ -125,20 +126,5 @@ class PreloadedImages(imagePath: File) {
             }
             currentImage.value = imageCache[1]
         }
-    }
-
-    fun reInit(imagePath: File) {
-        images = filterFiles(imagePath)
-        if (images.isEmpty()) {
-            throw NoSuchElementException()
-        }
-
-        if (!imagePath.isDirectory) {
-            setIndex(images.indexOf(imagePath))
-            if (imagePath.extension.toUpperCase() !in IMAGE_FORMATS) {
-                throw NoSuchElementException()
-            }
-        }
-        cacheImages()
     }
 }

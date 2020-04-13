@@ -151,7 +151,7 @@ class MainController(initialImagePath: String) {
 
     fun onDragDropped(dragEvent: DragEvent) {
         try {
-            images.reInit(dragEvent.dragboard.files.first())
+            images.initialize(dragEvent.dragboard.files.first())
         } catch (e: NoSuchElementException) {
             notificationController.showError()
         }
