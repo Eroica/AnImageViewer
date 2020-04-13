@@ -53,8 +53,8 @@ enum class ZOOM_MODE(private val label: String) {
 private const val WIDTH_PADDING = 100
 private const val HEIGHT_PADDING = 200
 
-private val SCREEN_HEIGHT = Screen.getPrimary().bounds.height / Screen.getPrimary().outputScaleY
-private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width / Screen.getPrimary().outputScaleX / 2
+private val SCREEN_HEIGHT = Screen.getPrimary().bounds.height
+private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width
 
 class MainController(initialImagePath: String) {
     @FXML
@@ -98,17 +98,14 @@ class MainController(initialImagePath: String) {
         images.getCurrentImage().apply {
             when {
                 height > SCREEN_HEIGHT -> {
+                    imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
                     zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-                    val aspectRatio = width / height
-                    imageView.fitWidth = (SCREEN_HEIGHT - HEIGHT_PADDING) * aspectRatio
                 }
                 width > HALF_SCREEN_WIDTH -> {
-                    zoomSelection.value = ZOOM_MODE.HALF_SCREEN
                     imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
+                    zoomSelection.value = ZOOM_MODE.HALF_SCREEN
                 }
-                else -> {
-                    zoomSelection.value = ZOOM_MODE.PERCENT_100
-                }
+                else -> zoomSelection.value = ZOOM_MODE.PERCENT_100
             }
         }
         imageView.imageProperty().bind(images.currentImageProperty())
