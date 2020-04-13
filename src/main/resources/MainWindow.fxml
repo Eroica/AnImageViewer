@@ -57,7 +57,7 @@
                                     </StackPane>
                                 </content>
                             </ScrollPane>
-                            <fx:include source="NotificationPane.fxml" fx:id="notification" />
+                            <fx:include source="NotificationPane.fxml" fx:id="notification"/>
                         </StackPane>
                     </children>
                 </VBox>
