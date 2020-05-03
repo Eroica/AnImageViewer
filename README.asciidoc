@@ -6,6 +6,8 @@ Simple image viewers on other platforms: On macOS, I recommend https://theunarch
 
 '''
 
+image::AnImageViewer.png[]
+
 This is an image viewer.
 You click on a file and it opens a window that shows that file.
 Open another image file, and a new window opens.
@@ -41,7 +43,7 @@ You can of course also let the image fit into the window size.
 |Fit image to window size
 
 |-
-|Keep image not larger than half of the screen width (the default)
+|Fit image on screen (don't let the window become bigger than the screen)
 
 |Ctrl+W +
 Ctrl+Q|Close window (alternatively to your window manager's shortcut)
