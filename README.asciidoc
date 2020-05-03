@@ -1,5 +1,11 @@
 = An Image Viewer
 
+**Note:** I have stopped using Windows for the time being, so I don't need to use An Image Viewer myself anymore. I have packaged the latest version of an Image Viewer (v1.1) for Windows into the Releases for anyone who might be interested in it.
+
+Simple image viewers on other platforms: On macOS, I recommend https://theunarchiver.com/xee[Xee^3^] (which was largely my inspiration). On GNOME, just use the built-in image viewer, it seems fine.
+
+'''
+
 This is an image viewer.
 You click on a file and it opens a window that shows that file.
 Open another image file, and a new window opens.
@@ -14,8 +20,6 @@ If the window is smaller than the image, you can pan around by clicking and drag
 You can of course also let the image fit into the window size.
 
 == Shortcuts
-
-_Switch `Ctrl` with `Cmd` on macOS._
 
 .Shortcuts
 |===
