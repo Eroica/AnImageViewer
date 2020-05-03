@@ -42,7 +42,7 @@ enum class ZOOM_MODE(private val label: String) {
     PERCENT_100("100%"),
     PERCENT_200("200%"),
     FIT_TO_WINDOW("Fit to window size"),
-    HALF_SCREEN("Half of the screen");
+    HALF_SCREEN("Fit on screen");
 
     override fun toString(): String {
         return this.label
@@ -97,7 +97,7 @@ class MainController(initialImagePath: String) {
 
         images.getCurrentImage().apply {
             when {
-                height > SCREEN_HEIGHT -> {
+                height > SCREEN_HEIGHT - HEIGHT_PADDING -> {
                     imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
                     zoomSelection.value = ZOOM_MODE.HALF_SCREEN
                 }
@@ -170,7 +170,7 @@ class MainController(initialImagePath: String) {
                 imageView.fitHeightProperty().bind(pane.heightProperty().subtract(2))
             }
             ZOOM_MODE.HALF_SCREEN -> {
-                if (image.height > SCREEN_HEIGHT) {
+                if (image.height > SCREEN_HEIGHT - HEIGHT_PADDING) {
                     imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
                 } else if (image.width > HALF_SCREEN_WIDTH) {
                     imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
