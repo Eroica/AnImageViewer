@@ -88,9 +88,8 @@ class MainController(initialImagePath: String) {
         zoomSelection.items = FXCollections.observableArrayList(*ZOOM_MODE.values())
         scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) {
             if (it.code == KeyCode.LEFT) {
-                onPreviousClick(it)
-            }
-            if (it.code == KeyCode.RIGHT) {
+				onPreviousClick(it)
+			} else if (it.code == KeyCode.RIGHT) {
                 onNextClick(it)
             }
         }
