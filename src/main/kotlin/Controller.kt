@@ -37,7 +37,6 @@ import java.net.URI
 import java.nio.file.Paths
 import java.util.concurrent.Callable
 
-
 enum class ZOOM_MODE(private val label: String) {
     PERCENT_100("100%"),
     PERCENT_200("200%"),
@@ -50,11 +49,11 @@ enum class ZOOM_MODE(private val label: String) {
 }
 
 // Arbitrary width and height padding to leave room for taskbars/menu bars
-private const val WIDTH_PADDING = 100
+private const val WIDTH_PADDING = 50
 private const val HEIGHT_PADDING = 200
 
 private val SCREEN_HEIGHT = Screen.getPrimary().bounds.height
-private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width
+private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width / 2
 
 class MainController(initialImagePath: String) {
     @FXML
@@ -86,26 +85,23 @@ class MainController(initialImagePath: String) {
 
     fun initialize() {
         zoomSelection.items = FXCollections.observableArrayList(*ZOOM_MODE.values())
-        scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) {
+		zoomSelection.value = ZOOM_MODE.PERCENT_100
+		scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) {
             if (it.code == KeyCode.LEFT) {
 				onPreviousClick(it)
 			} else if (it.code == KeyCode.RIGHT) {
                 onNextClick(it)
             }
         }
-
         images.getCurrentImage().apply {
-            when {
-                height > SCREEN_HEIGHT - HEIGHT_PADDING -> {
-                    imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                    zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-                }
-                width > HALF_SCREEN_WIDTH -> {
-                    imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
-                    zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-                }
-                else -> zoomSelection.value = ZOOM_MODE.PERCENT_100
-            }
+			if (height > SCREEN_HEIGHT - HEIGHT_PADDING) {
+				imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
+				zoomSelection.value = ZOOM_MODE.HALF_SCREEN
+			}
+			if (width > HALF_SCREEN_WIDTH) {
+				imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
+				zoomSelection.value = ZOOM_MODE.HALF_SCREEN
+			}
         }
         imageView.imageProperty().bind(images.currentImageProperty())
         images.currentImageProperty().addListener(InvalidationListener { setZoomMode() })
@@ -171,7 +167,8 @@ class MainController(initialImagePath: String) {
             ZOOM_MODE.HALF_SCREEN -> {
                 if (image.height > SCREEN_HEIGHT - HEIGHT_PADDING) {
                     imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                } else if (image.width > HALF_SCREEN_WIDTH) {
+                }
+				if (image.width > HALF_SCREEN_WIDTH) {
                     imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
                 }
             }
