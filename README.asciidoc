@@ -1,11 +1,5 @@
 = An Image Viewer
 
-**Note:** I have stopped using Windows for the time being, so I don't need to use An Image Viewer myself anymore. I have packaged the latest version of an Image Viewer (v1.1) for Windows into the Releases for anyone who might be interested in it.
-
-Simple image viewers on other platforms: On macOS, I recommend https://theunarchiver.com/xee[Xee^3^] (which was largely my inspiration). On GNOME, just use the built-in image viewer, it seems fine.
-
-'''
-
 image::AnImageViewer.png[]
 
 This is an image viewer.
