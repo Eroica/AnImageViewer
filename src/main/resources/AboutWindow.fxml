@@ -31,7 +31,7 @@
 								<Insets bottom="8.0"/>
 							</VBox.margin>
 						</Label>
-						<Label text="Version 1.1-SNAPSHOT"/>
+						<Label text="Version 1.2"/>
 					</children>
 					<padding>
 						<Insets bottom="16.0" left="24.0" right="16.0" top="24.0"/>
