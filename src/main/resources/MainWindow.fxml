@@ -1,67 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import components.AnImageView?>
+<?import components.Notification?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.Scene?>
 <?import javafx.scene.text.Font?>
 <?import javafx.stage.Stage?>
 <Stage fx:id="stage" minHeight="200.0" minWidth="300.0" title="An Image Viewer"
-       xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
-       fx:controller="MainController">
-    <scene>
-        <Scene onDragDropped="#onDragDropped" onDragOver="#onDragOver">
-            <root>
-                <VBox minHeight="200.0" minWidth="300.0">
-                    <children>
-                        <ToolBar>
-                            <items>
-                                <Button accessibleText="Previous image" disable="${controller.images.isAtBeginning}"
-                                        mnemonicParsing="false" onAction="#onPreviousClick" text="">
-                                    <font>
-                                        <Font name="Segoe MDL2 Assets" size="13.0"/>
-                                    </font>
-                                    <tooltip>
-                                        <Tooltip text="Previous image"/>
-                                    </tooltip>
-                                </Button>
-                                <Button disable="${controller.images.isAtEnd}" mnemonicParsing="false"
-                                        onAction="#onNextClick" text="">
-                                    <font>
-                                        <Font name="Segoe MDL2 Assets" size="13.0"/>
-                                    </font>
-                                    <tooltip>
-                                        <Tooltip text="Next image"/>
-                                    </tooltip>
-                                </Button>
-                                <Pane HBox.hgrow="ALWAYS"/>
-                                <ComboBox fx:id="zoomSelection" prefWidth="150.0">
-                                    <tooltip>
-                                        <Tooltip text="Select zoom mode"/>
-                                    </tooltip>
-                                </ComboBox>
-                                <Button mnemonicParsing="false" onAction="#onCopyClick" text="Copy">
-                                    <tooltip>
-                                        <Tooltip text="Copy image into clipboard"/>
-                                    </tooltip>
-                                </Button>
-                            </items>
-                        </ToolBar>
-                        <StackPane fx:id="pane" VBox.vgrow="ALWAYS">
-                            <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true">
-                                <content>
-                                    <StackPane>
-                                        <children>
-                                            <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true"/>
-                                        </children>
-                                    </StackPane>
-                                </content>
-                            </ScrollPane>
-                            <fx:include source="NotificationPane.fxml" fx:id="notification"/>
-                        </StackPane>
-                    </children>
-                </VBox>
-            </root>
-        </Scene>
-    </scene>
+		 xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+		 fx:controller="MainController">
+	<scene>
+		<Scene onDragDropped="#onDragDropped" onDragOver="#onDragOver">
+			<root>
+				<VBox minHeight="200.0" minWidth="300.0">
+					<children>
+						<ToolBar>
+							<items>
+								<Button accessibleText="Previous image" disable="${controller.images.isAtBeginning}"
+										  mnemonicParsing="false" onAction="#onPreviousClick" text="">
+									<font>
+										<Font name="Segoe MDL2 Assets" size="13.0"/>
+									</font>
+									<tooltip>
+										<Tooltip text="Previous image"/>
+									</tooltip>
+								</Button>
+								<Button disable="${controller.images.isAtEnd}" mnemonicParsing="false" onAction="#onNextClick"
+										  text="">
+									<font>
+										<Font name="Segoe MDL2 Assets" size="13.0"/>
+									</font>
+									<tooltip>
+										<Tooltip text="Next image"/>
+									</tooltip>
+								</Button>
+								<Pane HBox.hgrow="ALWAYS"/>
+								<ComboBox fx:id="zoomSelection" prefWidth="150.0">
+									<tooltip>
+										<Tooltip text="Select zoom mode"/>
+									</tooltip>
+								</ComboBox>
+								<Button mnemonicParsing="false" onAction="#onCopyClick" text="Copy">
+									<tooltip>
+										<Tooltip text="Copy image into clipboard"/>
+									</tooltip>
+								</Button>
+							</items>
+						</ToolBar>
+						<StackPane fx:id="pane" VBox.vgrow="ALWAYS">
+							<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true">
+								<AnImageView fx:id="image">
+									<path>
+										<fx:reference source="controller"/>
+									</path>
+									<container>
+										<fx:reference source="controller"/>
+									</container>
+									<zoomMode>
+										<fx:reference source="controller"/>
+									</zoomMode>
+								</AnImageView>
+							</ScrollPane>
+							<Notification fx:id="notification"/>
+						</StackPane>
+					</children>
+				</VBox>
+			</root>
+		</Scene>
+	</scene>
 </Stage>

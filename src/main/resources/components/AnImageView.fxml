@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<fx:root type="StackPane" xmlns="http://javafx.com/javafx"
+			xmlns:fx="http://javafx.com/fxml">
+	<Pane fx:id="background"
+			style="-fx-background-image: url(&quot;Checkerboard.png&quot;); -fx-background-repeat: repeat; -fx-background-size: 4px 4px;"/>
+	<ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true"/>
+</fx:root>

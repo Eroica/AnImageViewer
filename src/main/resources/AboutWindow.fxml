@@ -8,33 +8,36 @@
 <?import javafx.scene.Scene?>
 <?import javafx.scene.text.Font?>
 <?import javafx.stage.Stage?>
-<Stage alwaysOnTop="true" minHeight="160.0" minWidth="190.0" resizable="false" title="About An Image Viewer" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
-   <scene>
-      <Scene>
-         <root>
-            <VBox alignment="CENTER">
-               <children>
-                  <ImageView fitHeight="44.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
-                     <VBox.margin>
-                        <Insets bottom="8.0" />
-                     </VBox.margin>
-                     <image>
-                        <Image url="@64.png" />
-                     </image></ImageView>
-                  <Label text="An Image Viewer">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="8.0" />
-                     </VBox.margin></Label>
-                  <Label text="Version 1.1-SNAPSHOT" />
-               </children>
-               <padding>
-                  <Insets bottom="16.0" left="24.0" right="16.0" top="24.0" />
-               </padding>
-            </VBox>
-         </root>
-      </Scene>
-   </scene>
+<Stage alwaysOnTop="true" minHeight="160.0" minWidth="190.0" resizable="false" title="About An Image Viewer"
+		 xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+	<scene>
+		<Scene>
+			<root>
+				<VBox alignment="CENTER">
+					<children>
+						<ImageView fitHeight="44.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+							<VBox.margin>
+								<Insets bottom="8.0"/>
+							</VBox.margin>
+							<image>
+								<Image url="@64.png"/>
+							</image>
+						</ImageView>
+						<Label text="An Image Viewer">
+							<font>
+								<Font name="System Bold" size="14.0"/>
+							</font>
+							<VBox.margin>
+								<Insets bottom="8.0"/>
+							</VBox.margin>
+						</Label>
+						<Label text="Version 1.1-SNAPSHOT"/>
+					</children>
+					<padding>
+						<Insets bottom="16.0" left="24.0" right="16.0" top="24.0"/>
+					</padding>
+				</VBox>
+			</root>
+		</Scene>
+	</scene>
 </Stage>

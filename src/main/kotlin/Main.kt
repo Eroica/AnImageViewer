@@ -30,8 +30,7 @@ import javafx.scene.input.KeyCombination
 import javafx.scene.input.KeyEvent
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import java.lang.IndexOutOfBoundsException
-import java.util.NoSuchElementException
+import java.util.*
 
 fun main(args: Array<String>) {
     Application.launch(AnImageViewer::class.java, *args)
@@ -48,7 +47,7 @@ class AnImageViewer : Application() {
     override fun start(primaryStage: Stage) {
         try {
             // The controller is instantiated here and not inside the ControllerFactory of `stage'.
-            // Otherwise any exception (e.g. when there are elements in `parameters.raw' will get raised as an
+            // Otherwise any exception (e.g. when there are no elements in `parameters.raw' will get raised as an
             // LoadException.
             val controller = MainController(parameters.raw.first())
             val stage = FXMLLoader(
@@ -58,7 +57,6 @@ class AnImageViewer : Application() {
                 {
                     when (it) {
                         MainController::class.java -> controller
-                        NotificationController::class.java -> NotificationController()
                         else -> throw RuntimeException()
                     }
                 })

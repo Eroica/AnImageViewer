@@ -1,4 +1,4 @@
-/* Controller.kt
+/* Window.kt
 
   Copyright (C) 2019-2020 Eroica
 
@@ -20,19 +20,20 @@
 
 */
 
-import javafx.beans.InvalidationListener
+import components.AnImageView
+import components.IImageContainer
+import components.Notification
 import javafx.beans.binding.Bindings
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.collections.FXCollections
 import javafx.event.Event
 import javafx.fxml.FXML
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ScrollPane
-import javafx.scene.image.ImageView
 import javafx.scene.input.*
 import javafx.scene.layout.StackPane
-import javafx.stage.Screen
 import javafx.stage.Stage
-import java.io.File
 import java.net.URI
 import java.nio.file.Paths
 import java.util.concurrent.Callable
@@ -48,17 +49,15 @@ enum class ZOOM_MODE(private val label: String) {
     }
 }
 
-// Arbitrary width and height padding to leave room for taskbars/menu bars
-private const val WIDTH_PADDING = 50
-private const val HEIGHT_PADDING = 200
+interface IZoomMode {
+    fun zoomModeProperty(): ObjectProperty<ZOOM_MODE>
+}
 
-private val SCREEN_HEIGHT = Screen.getPrimary().bounds.height
-private val HALF_SCREEN_WIDTH = Screen.getPrimary().bounds.width / 2
+interface IPath {
+    val imagePath: String
+}
 
-class MainController(initialImagePath: String) {
-    @FXML
-    lateinit var notificationController: NotificationController
-
+class MainController(initialImagePath: String) : IImageContainer, IZoomMode, IPath {
     @FXML
     lateinit var stage: Stage
 
@@ -69,12 +68,24 @@ class MainController(initialImagePath: String) {
     lateinit var scrollPane: ScrollPane
 
     @FXML
-    lateinit var imageView: ImageView
-
-    @FXML
     lateinit var zoomSelection: ComboBox<ZOOM_MODE>
 
-    val images = PreloadedImages(File(initialImagePath))
+    @FXML
+    private lateinit var notification: Notification
+
+    @FXML
+    private lateinit var image: AnImageView
+
+    override fun zoomModeProperty(): ObjectProperty<ZOOM_MODE> {
+        return zoomSelection.valueProperty()
+    }
+
+    override val width: ReadOnlyDoubleProperty
+        get() = scrollPane.widthProperty()
+    override val height: ReadOnlyDoubleProperty
+        get() = scrollPane.heightProperty()
+
+    override val imagePath = initialImagePath
 
     private val keyCombinations = mapOf(
         KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN) to ZOOM_MODE.PERCENT_100,
@@ -85,51 +96,39 @@ class MainController(initialImagePath: String) {
 
     fun initialize() {
         zoomSelection.items = FXCollections.observableArrayList(*ZOOM_MODE.values())
-		zoomSelection.value = ZOOM_MODE.PERCENT_100
-		scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) {
+        zoomSelection.value = ZOOM_MODE.PERCENT_100
+        scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) {
             if (it.code == KeyCode.LEFT) {
-				onPreviousClick(it)
-			} else if (it.code == KeyCode.RIGHT) {
+                onPreviousClick(it)
+            } else if (it.code == KeyCode.RIGHT) {
                 onNextClick(it)
             }
         }
-        images.getCurrentImage().apply {
-			if (height > SCREEN_HEIGHT - HEIGHT_PADDING) {
-				imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-				zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-			}
-			if (width > HALF_SCREEN_WIDTH) {
-				imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
-				zoomSelection.value = ZOOM_MODE.HALF_SCREEN
-			}
-        }
-        imageView.imageProperty().bind(images.currentImageProperty())
-        images.currentImageProperty().addListener(InvalidationListener { setZoomMode() })
-        zoomSelection.valueProperty().addListener(InvalidationListener { setZoomMode() })
         stage.titleProperty().bind(Bindings.createStringBinding(Callable {
-            "An Image Viewer – ${Paths.get(URI.create(images.getCurrentImage().url))}"
-        }, images.currentImageProperty()))
+            "An Image Viewer – ${Paths.get(URI.create(image.images.getCurrentImage().url))}"
+        }, image.images.currentImageProperty()))
         stage.addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
             keyCombinations.firstOrNull { it.key.match(keyEvent) }?.let {
                 zoomSelection.value = it.value
             }
         }
+        // ...
         scrollPane.requestFocus()
     }
 
     fun onPreviousClick(event: Event) {
-        images.moveBack()
+        image.images.moveBack()
         event.consume()
     }
 
     fun onNextClick(event: Event) {
-        images.moveForward()
+        image.images.moveForward()
         event.consume()
     }
 
     fun onCopyClick(event: Event) {
         Clipboard.getSystemClipboard().setContent(ClipboardContent().apply {
-            putImage(imageView.image)
+            putImage(this@MainController.image.imageView.image)
         })
         event.consume()
     }
@@ -143,36 +142,10 @@ class MainController(initialImagePath: String) {
 
     fun onDragDropped(dragEvent: DragEvent) {
         try {
-            images.initialize(dragEvent.dragboard.files.first())
+            image.images.initialize(dragEvent.dragboard.files.first())
         } catch (e: NoSuchElementException) {
-            notificationController.showError()
+            notification.show()
         }
         dragEvent.consume()
-    }
-
-    private fun setZoomMode() {
-        val image = images.getCurrentImage()
-        imageView.fitWidthProperty().unbind()
-        imageView.fitHeightProperty().unbind()
-        imageView.fitWidth = 0.0
-        imageView.fitHeight = 0.0
-        when (zoomSelection.value) {
-            ZOOM_MODE.PERCENT_100 -> imageView.fitWidth = 0.0
-            ZOOM_MODE.PERCENT_200 -> imageView.fitWidth = image.width * 2
-            ZOOM_MODE.FIT_TO_WINDOW -> {
-                // Need to subtract 2 to account for the border width
-                imageView.fitWidthProperty().bind(pane.widthProperty().subtract(2))
-                imageView.fitHeightProperty().bind(pane.heightProperty().subtract(2))
-            }
-            ZOOM_MODE.HALF_SCREEN -> {
-                if (image.height > SCREEN_HEIGHT - HEIGHT_PADDING) {
-                    imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                }
-				if (image.width > HALF_SCREEN_WIDTH) {
-                    imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
-                }
-            }
-            null -> imageView.fitWidth = 0.0
-        }
     }
 }

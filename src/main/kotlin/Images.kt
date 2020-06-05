@@ -31,11 +31,11 @@ private val IMAGE_FORMATS = setOf("BMP", "GIF", "JPG", "JPEG", "PNG")
 class PreloadedImages(imagePath: File) {
     private var images = filterFiles(imagePath)
     private var index = 0
-    private set(value) {
-        field = value
-        isAtBeginning.value = index == 0
-        isAtEnd.value = index == images.size - 1
-    }
+        private set(value) {
+            field = value
+            isAtBeginning.value = index == 0
+            isAtEnd.value = index == images.size - 1
+        }
     private val isAtBeginning = SimpleBooleanProperty(true)
     fun getIsAtBeginning() = isAtBeginning.get()
     fun isAtBeginningProperty() = isAtBeginning
