@@ -3,15 +3,15 @@
 image::AnImageViewer.png[]
 
 This is an image viewer.
-You click on a file and it opens a window that shows that file.
-Open another image file, and a new window opens.
+You click on a file, and it opens a window that shows that file.
 Press the left or right arrow key to navigate to the next image.
 You can quickly compare or browse images this way.
 
+If you click on another file, a new window opens.
 By default, the window size is as large as the image you open; however, never larger than half of your screen's width.
-(I don't like application windows that extend/reach out over the desktop.)
-If you then navigate to other images, the window size is kept the same.
-If the window is smaller than the image, you can pan around by clicking and dragging over the image.
+(This way you can always compare two images without them overlapping.)
+If you navigate to other images, the window size stays the same.
+In the case that the window becomes too small for the image, you can pan around by clicking and dragging over the image.
 
 You can of course also let the image fit into the window size.
 
@@ -46,30 +46,33 @@ Ctrl+Q|Close window (alternatively to your window manager's shortcut)
 |Open About window
 |===
 
-== A Little Bit of History
+== Why An Image Viewer
 
-(Jump to <<Installation>> if you aren't interested.)
+When creating videos with Blender, the frames are usually rendered into individual images first.
+I often need to look at these frames to check small details or make sure the animation feels right.
 
-So one day I needed to browse a sequence of images (basically video frames) on my new Windows computer.
-I double-click an image which opens the _Photos_ app and sure enough, I can look at my image, even though it sometimes asks me to look at content that it "`prepared.`"
-Oh I needed to turn off notifications and other "`features`" in the settings as well.
-
-Anyway, so I browse frame 1 of my images, then frame 2 ...
-but for some reason, when I hold the Right arrow key to skim through each frame, the application always takes some time to load the next image.
-Perhaps around 0.5 seconds or something like that, but this is on an Intel i7-9700!
+I'm now primarily using Windows (10), but the built-in _Photos_ app has some small annoyances that make my work a little bit more difficult.
+For example, when I hold the Right arrow key to skim through each frame, the application always takes some time to load the next image.
+Perhaps around 0.5 seconds or something like that, but this is on a new Intel i7-9700 with SSD!
 
 "`That can't be right,`" I said to myself, and put together this image viewer.
 There are of course probably better alternatives on Windows, but at least this image viewer works the way that I like, and I don't need to install additional things.
 
-Most importantly, it opens an image, and if you press and hold the Left/Right arrow key, the next image loads immediately.
+Additionally, Window's Photo app renders transparent parts of an image in white which can be confusing at times.
+An Image Viewer shows the familiar checkerboard pattern.
+When comparing two large images side-by-side, they windows can overlap awkwardly.
+Of course you could press Win+Left/Right to tile them to each side (which I don't like), but then the canvas size often stays wrong (part of the image is hidden).
+An Image Viewer checks your screen size and will not create a window larger than half of your screen (zooming out of the image if necessary) so that you can always put them side-by-side.
+
+But most importantly, it opens an image, and if you press and hold the Left/Right arrow key, the next image loads immediately.
 
 See here a quick comparison between _Photos_ and _An Image Viewer._
 I open the same directory and press and hold the right arrow key (pay attention to the current filename in the title bar).
 
 image::Comparison.gif[]
 
-__To Photos defense, I later found out that it is largely some kind of intentional (?) input delay that takes place when you press and hold a key;
-meaning that if you can hit the Arrow key rapidly, the application does manage to keep up with the speed.__
+__To Photos defense, I later found out that it is largely some kind of intentional (?) input delay that takes place when you press and hold a key; meaning that if you can hit the Arrow key rapidly, the application does manage to keep up with the speed.
+However, when skimming through video frames, I don't want to hit the arrow keys rapidly like a maniac.__
 
 === How does it work
 
@@ -81,8 +84,6 @@ I'm sure there are better approaches, but this works for me.
 
 A `jpackage`-generated image is available under Releases.
 `jpackage` bundles the required JRE with the executable, so nothing else is required to run An Image Viewer.
-
-For other distributions or running from source, see <<Building>> below.
 
 == Building
 
