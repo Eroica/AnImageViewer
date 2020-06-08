@@ -38,6 +38,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.StackPane
 import javafx.stage.Screen
 import java.io.File
+import kotlin.math.floor
 
 // Arbitrary width and height padding to leave room for taskbars/menu bars
 private const val WIDTH_PADDING = 50
@@ -75,24 +76,30 @@ class AnImageView(@NamedArg("container") private val container: IImageContainer,
             setController(this@AnImageView)
             load()
         }
-        zoomMode.zoomModeProperty().addListener(InvalidationListener { setZoomMode(zoomMode.zoomModeProperty().value) })
+        zoomMode.zoomModeProperty().value = ZOOM_MODE.PERCENT_100
         images = PreloadedImages(File(initialPath.imagePath))
-        background.maxWidth = images.getCurrentImage().width
-        background.maxHeight = images.getCurrentImage().height
         images.getCurrentImage().apply {
-            if (height > SCREEN_HEIGHT - HEIGHT_PADDING) {
-                imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                background.maxHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                zoomMode.zoomModeProperty().value = ZOOM_MODE.HALF_SCREEN
-            }
-            if (width > HALF_SCREEN_WIDTH) {
+            background.maxWidth = width
+            background.maxHeight = height
+
+            if (height > SCREEN_HEIGHT - HEIGHT_PADDING || width > HALF_SCREEN_WIDTH - WIDTH_PADDING) {
                 imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
-                background.maxWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
+                imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
+                background.maxWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING - 2
+                background.maxHeight = SCREEN_HEIGHT - HEIGHT_PADDING - 2
+                if (imageView.fitWidth / imageView.fitHeight >= 1) {
+                    imageView.fitHeight = floor(imageView.fitWidth/width * height)
+                    background.maxHeight = floor(imageView.fitWidth/width * height)
+                } else {
+                    imageView.fitWidth = floor(imageView.fitHeight/height * width)
+                    background.maxWidth = floor(imageView.fitHeight/height * width)
+                }
                 zoomMode.zoomModeProperty().value = ZOOM_MODE.HALF_SCREEN
             }
         }
-        imageView.imageProperty().bind(images.currentImageProperty())
+        zoomMode.zoomModeProperty().addListener(InvalidationListener { setZoomMode(zoomMode.zoomModeProperty().value) })
         images.currentImageProperty().addListener(InvalidationListener { setZoomMode(zoomMode.zoomModeProperty().value) })
+        imageView.imageProperty().bind(images.currentImageProperty())
     }
 
     override fun next() {

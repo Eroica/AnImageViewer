@@ -96,7 +96,6 @@ class MainController(initialImagePath: String) : IImageContainer, IZoomMode, IPa
 
     fun initialize() {
         zoomSelection.items = FXCollections.observableArrayList(*ZOOM_MODE.values())
-        zoomSelection.value = ZOOM_MODE.PERCENT_100
         scrollPane.addEventFilter(KeyEvent.KEY_PRESSED) {
             if (it.code == KeyCode.LEFT) {
                 onPreviousClick(it)
@@ -117,12 +116,12 @@ class MainController(initialImagePath: String) : IImageContainer, IZoomMode, IPa
     }
 
     fun onPreviousClick(event: Event) {
-        image.images.moveBack()
+        image.previous()
         event.consume()
     }
 
     fun onNextClick(event: Event) {
-        image.images.moveForward()
+        image.next()
         event.consume()
     }
 
