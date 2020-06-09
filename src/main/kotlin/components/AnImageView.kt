@@ -38,7 +38,6 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.StackPane
 import javafx.stage.Screen
 import java.io.File
-import kotlin.math.floor
 
 // Arbitrary width and height padding to leave room for taskbars/menu bars
 private const val WIDTH_PADDING = 50
@@ -79,21 +78,11 @@ class AnImageView(@NamedArg("container") private val container: IImageContainer,
         zoomMode.zoomModeProperty().value = ZOOM_MODE.PERCENT_100
         images = PreloadedImages(File(initialPath.imagePath))
         images.getCurrentImage().apply {
-            background.maxWidth = width
-            background.maxHeight = height
-
-            if (height > SCREEN_HEIGHT - HEIGHT_PADDING || width > HALF_SCREEN_WIDTH - WIDTH_PADDING) {
+            if (width > HALF_SCREEN_WIDTH - WIDTH_PADDING || height > SCREEN_HEIGHT - HEIGHT_PADDING) {
                 imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
                 imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                background.maxWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING - 2
-                background.maxHeight = SCREEN_HEIGHT - HEIGHT_PADDING - 2
-                if (imageView.fitWidth / imageView.fitHeight >= 1) {
-                    imageView.fitHeight = floor(imageView.fitWidth/width * height)
-                    background.maxHeight = floor(imageView.fitWidth/width * height)
-                } else {
-                    imageView.fitWidth = floor(imageView.fitHeight/height * width)
-                    background.maxWidth = floor(imageView.fitHeight/height * width)
-                }
+                background.maxWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
+                background.maxHeight = SCREEN_HEIGHT - HEIGHT_PADDING
                 zoomMode.zoomModeProperty().value = ZOOM_MODE.HALF_SCREEN
             }
         }
@@ -141,14 +130,10 @@ class AnImageView(@NamedArg("container") private val container: IImageContainer,
                 background.maxHeight = -1.0
             }
             ZOOM_MODE.HALF_SCREEN -> {
-                if (image.height > SCREEN_HEIGHT - HEIGHT_PADDING) {
-                    imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                    background.maxHeight = SCREEN_HEIGHT - HEIGHT_PADDING
-                }
-                if (image.width > HALF_SCREEN_WIDTH) {
-                    imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
-                    background.maxWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
-                }
+                imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
+                imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
+                background.maxWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
+                background.maxHeight = SCREEN_HEIGHT - HEIGHT_PADDING
             }
         }
     }
