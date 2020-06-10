@@ -61,7 +61,7 @@ class AnImageViewer : Application() {
                     }
                 })
                 .load<Stage>()
-            stage.icons.add(Image(javaClass.getResourceAsStream("16.png")))
+            stage.icons.add(Image(javaClass.getResourceAsStream("256.png")))
             stage.addEventHandler(KeyEvent.KEY_RELEASED) { keyEvent ->
                 if (QUIT_COMBINATIONS.any { it.match(keyEvent) }) {
                     Platform.exit()
