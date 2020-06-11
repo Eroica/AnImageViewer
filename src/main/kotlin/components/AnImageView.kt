@@ -78,6 +78,8 @@ class AnImageView(@NamedArg("container") private val container: IImageContainer,
         zoomMode.zoomModeProperty().value = ZOOM_MODE.PERCENT_100
         images = PreloadedImages(File(initialPath.imagePath))
         images.getCurrentImage().apply {
+            background.maxWidth = width
+            background.maxHeight = height
             if (width > HALF_SCREEN_WIDTH - WIDTH_PADDING || height > SCREEN_HEIGHT - HEIGHT_PADDING) {
                 imageView.fitWidth = HALF_SCREEN_WIDTH - WIDTH_PADDING
                 imageView.fitHeight = SCREEN_HEIGHT - HEIGHT_PADDING
