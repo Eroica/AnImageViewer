@@ -20,7 +20,7 @@
 								<Insets bottom="8.0"/>
 							</VBox.margin>
 							<image>
-								<Image url="@64.png"/>
+								<Image url="@../64.png"/>
 							</image>
 						</ImageView>
 						<Label text="An Image Viewer">

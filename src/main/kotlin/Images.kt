@@ -57,11 +57,14 @@ class PreloadedImages(imagePath: File) {
     fun initialize(imagePath: File) {
         if (imagePath !in images) {
             images = filterFiles(imagePath)
-        }
-        if (!imagePath.isDirectory && imagePath.extension.toUpperCase() !in IMAGE_FORMATS) {
+            index = 0
+        } else if (imagePath.isDirectory) {
+            images = filterFiles(imagePath)
+        } else if (!imagePath.isDirectory && imagePath.extension.toUpperCase() !in IMAGE_FORMATS) {
             throw NoSuchElementException()
+        } else {
+            index = images.indexOf(imagePath)
         }
-        index = images.indexOf(imagePath)
         cacheImages()
     }
 

@@ -1,4 +1,4 @@
-/* Main.kt
+/* ViewModel.kt
 
   Copyright (C) 2019-2020 Eroica
 
@@ -20,33 +20,40 @@
 
 */
 
-import components.Window
-import javafx.application.Application
-import javafx.application.Platform
-import javafx.scene.image.Image
-import javafx.stage.Stage
-import models.ViewModel
-import java.io.File
-import java.util.*
+package models
 
-fun main(args: Array<String>) {
-    Application.launch(AnImageViewer::class.java, *args)
+import PreloadedImages
+import javafx.beans.property.SimpleObjectProperty
+import java.io.File
+
+enum class ZoomMode(private val label: String) {
+    PERCENT_100("100%"),
+    PERCENT_200("200%"),
+    FIT_TO_WINDOW("Fit to window size"),
+    HALF_SCREEN("Fit on screen");
+
+    override fun toString(): String {
+        return this.label
+    }
 }
 
-class AnImageViewer : Application() {
-    override fun start(primaryStage: Stage) {
-        try {
-            val viewModel = ViewModel(File(parameters.raw.first()))
-            val stage = Window(viewModel)
-            stage.icons.add(Image(javaClass.getResourceAsStream("256.png")))
-            stage.show()
-        } catch (e: NoSuchElementException) {
-            println("No image provided. Exiting ...")
-            Platform.exit()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            System.err.println("Loading image ${parameters.raw[0]} failed")
-            Platform.exit()
-        }
+interface IViewModel {
+    fun nextImage()
+    fun previousImage()
+
+    val images: PreloadedImages
+    val zoomMode: SimpleObjectProperty<ZoomMode>
+}
+
+data class ViewModel(private var initialPath: File) : IViewModel {
+    override val images: PreloadedImages = PreloadedImages(initialPath)
+    override val zoomMode = SimpleObjectProperty<ZoomMode>(ZoomMode.PERCENT_100)
+
+    override fun nextImage() {
+        images.moveForward()
+    }
+
+    override fun previousImage() {
+        images.moveBack()
     }
 }

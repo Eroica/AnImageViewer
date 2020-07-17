@@ -7,9 +7,8 @@
 <?import javafx.scene.Scene?>
 <?import javafx.scene.text.Font?>
 <?import javafx.stage.Stage?>
-<Stage fx:id="stage" minHeight="200.0" minWidth="300.0" title="An Image Viewer"
-		 xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
-		 fx:controller="MainController">
+<fx:root type="Stage" fx:id="stage" minHeight="200.0" minWidth="300.0" title="An Image Viewer"
+			xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
 	<scene>
 		<Scene onDragDropped="#onDragDropped" onDragOver="#onDragOver">
 			<root>
@@ -17,7 +16,7 @@
 					<children>
 						<ToolBar>
 							<items>
-								<Button accessibleText="Previous image" disable="${image.images.isAtBeginning}"
+								<Button accessibleText="Previous image" disable="${controller.viewModel.images.isAtBeginning}"
 										  mnemonicParsing="false" onAction="#onPreviousClick" text="">
 									<font>
 										<Font name="Segoe MDL2 Assets" size="13.0"/>
@@ -26,7 +25,7 @@
 										<Tooltip text="Previous image"/>
 									</tooltip>
 								</Button>
-								<Button disable="${image.images.isAtEnd}" mnemonicParsing="false" onAction="#onNextClick"
+								<Button disable="${controller.viewModel.images.isAtEnd}" mnemonicParsing="false" onAction="#onNextClick"
 										  text="">
 									<font>
 										<Font name="Segoe MDL2 Assets" size="13.0"/>
@@ -50,16 +49,13 @@
 						</ToolBar>
 						<StackPane fx:id="pane" VBox.vgrow="ALWAYS">
 							<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true">
-								<AnImageView fx:id="image">
-									<path>
-										<fx:reference source="controller"/>
-									</path>
+								<AnImageView fx:id="anImageView">
 									<container>
 										<fx:reference source="controller"/>
 									</container>
-									<zoomMode>
-										<fx:reference source="controller"/>
-									</zoomMode>
+									<viewModel>
+										<fx:reference source="controller.viewModel"/>
+									</viewModel>
 								</AnImageView>
 							</ScrollPane>
 							<Notification fx:id="notification"/>
@@ -69,4 +65,4 @@
 			</root>
 		</Scene>
 	</scene>
-</Stage>
+</fx:root>
