@@ -48,23 +48,15 @@ Ctrl+Q|Close window (alternatively to your window manager's shortcut)
 
 == Why An Image Viewer
 
-When creating videos with Blender, the frames are usually rendered into individual images first.
+When creating videos with Blender, you usually first render each frame into an individual image.
 I often need to look at these frames to check small details or make sure the animation feels right.
 
-I'm now primarily using Windows (10), but the built-in _Photos_ app has some small annoyances that make my work a little bit more difficult.
+I'm now primarily using Windows 10, and the built-in _Photos_ app has some small annoyances that make my work a little more difficult.
 For example, when I hold the Right arrow key to skim through each frame, the application always takes some time to load the next image.
 Perhaps around 0.5 seconds or something like that, but this is on a new Intel i7-9700 with SSD!
 
 "`That can't be right,`" I said to myself, and put together this image viewer.
 There are of course probably better alternatives on Windows, but at least this image viewer works the way that I like, and I don't need to install additional things.
-
-Additionally, Window's Photo app renders transparent parts of an image in white which can be confusing at times.
-An Image Viewer shows the familiar checkerboard pattern.
-When comparing two large images side-by-side, they windows can overlap awkwardly.
-Of course you could press Win+Left/Right to tile them to each side (which I don't like), but then the canvas size often stays wrong (part of the image is hidden).
-An Image Viewer checks your screen size and will not create a window larger than half of your screen (zooming out of the image if necessary) so that you can always put them side-by-side.
-
-But most importantly, it opens an image, and if you press and hold the Left/Right arrow key, the next image loads immediately.
 
 See here a quick comparison between _Photos_ and _An Image Viewer._
 I open the same directory and press and hold the right arrow key (pay attention to the current filename in the title bar).
@@ -73,6 +65,16 @@ image::Comparison.gif[]
 
 __To Photos defense, I later found out that it is largely some kind of intentional (?) input delay that takes place when you press and hold a key; meaning that if you can hit the Arrow key rapidly, the application does manage to keep up with the speed.
 However, when skimming through video frames, I don't want to hit the arrow keys rapidly like a maniac.__
+
+Next to that, Window's Photos app displays transparent parts of an image as pure white which can be confusing at times.
+An Image Viewer shows the familiar checkerboard pattern.
+
+When comparing two large images side-by-side, their windows can overlap awkwardly.
+If you tile them with Win+Left/Right the canvas size is often wrong (part of the image becomes hidden).
+An Image Viewer checks your screen size and will not create a window larger than half of your screen (zooming out of the image if necessary).
+This way if you open two images separately, you can always put them side-by-side.
+
+But most importantly, it opens an image, and if you press and hold the Left/Right arrow key, the next image loads immediately.
 
 === How does it work
 
